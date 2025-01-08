@@ -1,0 +1,13 @@
+pluginManagement {
+    repositories {
+        maven {
+            url 'https://maven.aliyun.com/repository/gradle-plugin'
+        }
+        gradlePluginPortal()
+    }
+}
+rootProject.name = 'api_market'
+
+include 'api_market_core'
+include 'api_market_api'
+include 'api_market_mg'

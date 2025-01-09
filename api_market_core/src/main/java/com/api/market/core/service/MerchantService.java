@@ -1,19 +1,18 @@
 package com.api.market.core.service;
 
-import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.RandomUtil;
+import com.api.market.core.dto.base.PageDTO;
 import com.api.market.core.dto.merchant.MerchantCreateReqDTO;
 import com.api.market.core.dto.merchant.MerchantQueryReqDTO;
 import com.api.market.core.dto.merchant.MerchantResDTO;
 import com.api.market.core.dto.merchant.MerchantUpdateReqDTO;
 import com.api.market.core.exception.MerchantException;
+import com.api.market.core.jpa.PkPageable;
 import com.api.market.core.mapper.MerchantMapper;
 import com.api.market.core.po.MerchantPO;
 import com.api.market.core.repo.MerchantRepo;
 import jakarta.annotation.Resource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,52 +26,36 @@ public class MerchantService {
 	private MerchantMapper merchantMapper;
 
 	@Transactional(rollbackFor = Exception.class)
-	public MerchantResDTO create(MerchantCreateReqDTO dto) {
+	public Long create(MerchantCreateReqDTO dto) {
 		// 检查商户编码是否已存在
-		if (merchantRepo.findByMerchantCode(dto.getMerchantCode()).isPresent()) {
+		if (merchantRepo.existsByMerCode(dto.getMerCode())) {
 			throw MerchantException.merCodeExist();
 		}
-
 		MerchantPO merchant = merchantMapper.fromCreateDTO(dto);
 
-		// 生成appKey和appSecret
 		merchant.setAppKey(generateAppKey());
 		merchant.setAppSecret(generateAppSecret());
 
-		merchant = merchantRepo.save(merchant);
-		return merchantMapper.toDTO(merchant);
+		merchantRepo.save(merchant);
+		return merchant.getId();
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public MerchantResDTO update(MerchantUpdateReqDTO dto) {
+	public void update(MerchantUpdateReqDTO dto) {
 		MerchantPO merchant = merchantRepo.findById(dto.getId())
 				.orElseThrow(MerchantException::notFound);
 
-		merchantMapper.updateFromDTO(merchant, dto);
-		merchant = merchantRepo.save(merchant);
-		return merchantMapper.toDTO(merchant);
+		merchantMapper.fromUpdateDTO(merchant, dto);
+		merchantRepo.save(merchant);
 	}
 
-	public Page<MerchantResDTO> query(MerchantQueryReqDTO dto) {
-		Specification<MerchantPO> spec = (root, query, cb) -> null;
+	public MerchantResDTO get(Long id) {
+		return merchantMapper.toDto(findById(id));
+	}
 
-		// 构建查询条件
-		if (dto.getMerchantName() != null) {
-			spec = spec.and((root, query, cb) -> cb.like(root.get("merchantName"), "%" + dto.getMerchantName() + "%"));
-		}
-		if (dto.getMerchantCode() != null) {
-			spec = spec.and((root, query, cb) -> cb.equal(root.get("merchantCode"), dto.getMerchantCode()));
-		}
-		if (dto.getStatus() != null) {
-			spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), dto.getStatus()));
-		}
-
-		PageRequest pageRequest = PageRequest.of(
-				dto.getPageNum() - 1,
-				dto.getPageSize(),
-				Sort.by(Sort.Direction.DESC, "createTime"));
-
-		return merchantRepo.findAll(spec, pageRequest).map(merchantMapper::toDTO);
+	public PageDTO<MerchantResDTO> search(MerchantQueryReqDTO dto) {
+		Page<MerchantPO> pages = merchantRepo.search(dto, PkPageable.ofDefaultSort(dto.getPage(), dto.getSize()));
+		return PageDTO.from(pages, po -> merchantMapper.toDto(po));
 	}
 
 	public MerchantPO findById(Long id) {
@@ -80,10 +63,10 @@ public class MerchantService {
 	}
 
 	private String generateAppKey() {
-		return IdUtil.fastSimpleUUID();
+		return RandomUtil.randomString(16);
 	}
 
 	private String generateAppSecret() {
-		return IdUtil.fastSimpleUUID();
+		return RandomUtil.randomString(16);
 	}
 }

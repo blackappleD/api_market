@@ -1,25 +1,19 @@
 package com.api.market.core.dto.api;
 
+import com.api.market.core.dto.LongIdDTO;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class ApiUpdateReqDTO {
-    @NotBlank(message = "ID不能为空")
-    private String id;
+	@NotBlank(message = "ID不能为空")
+	private Long id;
 
-    @NotBlank(message = "接口名称不能为空")
-    private String apiName;
+	@NotBlank(message = "接口名称不能为空")
+	private String name;
 
-    private String categoryId;
+	private LongIdDTO category = new LongIdDTO();
 
-    private String description;
+	private String description;
 
-    private String requestMethod;
-
-    private String requestParams;
-
-    private String responseParams;
-
-    private Integer status;
 }

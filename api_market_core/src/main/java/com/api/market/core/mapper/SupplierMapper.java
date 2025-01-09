@@ -15,5 +15,5 @@ public interface SupplierMapper extends BaseMapper<SupplierPO, SupplierResDTO> {
     @Mapping(target = "status", constant = "1")
     SupplierPO fromCreateDTO(SupplierCreateReqDTO dto);
 
-    void updateFromDTO(@MappingTarget SupplierPO po, SupplierUpdateReqDTO dto);
+    void fromUpdateDTO(@MappingTarget SupplierPO po, SupplierUpdateReqDTO dto);
 }

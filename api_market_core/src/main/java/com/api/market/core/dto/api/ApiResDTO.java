@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class ApiResDTO {
-    private String id;
+    private Long id;
     private String apiCode;
     private String apiName;
     private String categoryId;

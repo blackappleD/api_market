@@ -11,5 +11,5 @@ public interface MerchantApiLogMapper extends BaseMapper<MerchantApiLogPO, Merch
     @Override
     @Mapping(target = "merchantName", ignore = true)
     @Mapping(target = "apiName", ignore = true)
-    MerchantApiLogResDTO toDTO(MerchantApiLogPO po);
+    MerchantApiLogResDTO toDto(MerchantApiLogPO po);
 }

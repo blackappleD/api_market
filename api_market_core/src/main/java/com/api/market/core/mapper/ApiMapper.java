@@ -8,12 +8,11 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = ApiCategoryMapper.class)
 public interface ApiMapper extends BaseMapper<ApiPO, ApiResDTO> {
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", constant = "1")
-    ApiPO fromCreateDTO(ApiCreateReqDTO dto);
+	@Mapping(target = "id", ignore = true)
+	ApiPO fromCreateDTO(ApiCreateReqDTO dto);
 
-    void updateFromDTO(@MappingTarget ApiPO po, ApiUpdateReqDTO dto);
+	void fromUpdateDTO(@MappingTarget ApiPO po, ApiUpdateReqDTO dto);
 }

@@ -1,5 +1,6 @@
 package com.api.market.core.po;
 
+import com.api.market.core.po.base.BasePO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

@@ -4,8 +4,7 @@ import lombok.Data;
 
 @Data
 public class BasePageReqDTO {
-    private Integer pageNum = 1;
-    private Integer pageSize = 10;
-    private String sortField;
-    private String sortOrder; // asc, desc
+	private Integer page = 1;
+	private Integer size = 10;
+	private String search;
 }

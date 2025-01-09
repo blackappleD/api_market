@@ -1,31 +1,48 @@
 package com.api.market.mg.controller;
 
-import com.api.market.core.dto.api.*;
+import com.api.market.core.annotations.PkResponseBody;
+import com.api.market.core.dto.BatchEnableLongIdReqDTO;
+import com.api.market.core.dto.api.ApiCreateReqDTO;
+import com.api.market.core.dto.api.ApiQueryReqDTO;
+import com.api.market.core.dto.api.ApiResDTO;
+import com.api.market.core.dto.api.ApiUpdateReqDTO;
+import com.api.market.core.dto.base.PageDTO;
 import com.api.market.core.service.ApiService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
+@PkResponseBody
 public class ApiController {
 
-    @Resource
-    private ApiService apiService;
+	@Resource
+	private ApiService apiService;
 
-    @PostMapping
-    public ApiResDTO create(@Valid @RequestBody ApiCreateReqDTO dto) {
-        return apiService.create(dto);
-    }
+	@PostMapping
+	public Long create(@Valid @RequestBody ApiCreateReqDTO dto) {
+		return apiService.create(dto);
+	}
 
-    @PutMapping
-    public ApiResDTO update(@Valid @RequestBody ApiUpdateReqDTO dto) {
-        return apiService.update(dto);
-    }
+	@PutMapping
+	public void update(@Valid @RequestBody ApiUpdateReqDTO dto) {
+		apiService.update(dto);
+	}
 
-    @GetMapping("/page")
-    public Page<ApiResDTO> page(@Valid ApiQueryReqDTO dto) {
-        return apiService.query(dto);
-    }
+	@GetMapping("/{id}")
+	public ApiResDTO get(@PathVariable Long id) {
+		return apiService.get(id);
+	}
+
+	@PostMapping("/page")
+	public PageDTO<ApiResDTO> page(@Valid @RequestBody ApiQueryReqDTO dto) {
+		return apiService.search(dto);
+	}
+
+	@PutMapping("/enable")
+	public void batchEnable(@Valid @RequestBody BatchEnableLongIdReqDTO dto) {
+		apiService.batchUpdateStatus(dto);
+	}
+
 }

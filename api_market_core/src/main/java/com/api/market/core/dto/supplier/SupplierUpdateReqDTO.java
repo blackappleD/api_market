@@ -6,22 +6,20 @@ import lombok.Data;
 
 @Data
 public class SupplierUpdateReqDTO {
-    @NotBlank(message = "ID不能为空")
-    private String id;
+	@NotBlank(message = "ID不能为空")
+	private Long id;
 
-    @NotBlank(message = "供应商名称不能为空")
-    private String supplierName;
+	@NotBlank(message = "供应商名称不能为空")
+	private String name;
 
-    private String description;
+	private String description;
 
-    private String contactName;
+	private String contactName;
 
-    private String contactPhone;
+	private String contactPhone;
 
-    @Email(message = "邮箱格式不正确")
-    private String contactEmail;
+	@Email(message = "邮箱格式不正确")
+	private String contactEmail;
 
-    private String address;
-
-    private Integer status;
+	private Boolean enable;
 }

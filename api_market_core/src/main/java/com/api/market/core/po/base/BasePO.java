@@ -1,5 +1,6 @@
-package com.api.market.core.po;
+package com.api.market.core.po.base;
 
+import com.api.market.core.util.AdminUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
@@ -71,7 +72,7 @@ public abstract class BasePO<I extends Serializable> implements Serializable {
 		@Column(nullable = false)
 		@CreatedBy
 		@Comment("创建人主键id")
-		private String createId;
+		private String createId = AdminUtil.getCurrentUser().getId();
 
 		@Column(nullable = false)
 		@LastModifiedBy

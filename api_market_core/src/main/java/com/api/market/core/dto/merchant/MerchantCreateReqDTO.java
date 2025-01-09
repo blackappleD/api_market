@@ -6,16 +6,17 @@ import lombok.Data;
 
 @Data
 public class MerchantCreateReqDTO {
-    @NotBlank(message = "商户名称不能为空")
-    private String merchantName;
+	@NotBlank(message = "商户名称不能为空")
+	private String name;
 
-    @NotBlank(message = "商户编码不能为空")
-    private String merchantCode;
+	@NotBlank(message = "商户编码不能为空")
+	private String merCode;
 
-    private String contactName;
+	private String contactName;
 
-    private String contactPhone;
+	private String contactPhone;
 
-    @Email(message = "邮箱格式不正确")
-    private String contactEmail;
+	@Email(message = "邮箱格式不正确")
+	private String contactEmail;
+
 }

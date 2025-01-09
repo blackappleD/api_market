@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface BaseMapper<PO, DTO> {
 
-	DTO toDTO(PO po);
+	DTO toDto(PO po);
 
-	PO toPO(DTO dto);
+	PO toPo(DTO dto);
 
-	List<DTO> toDTOList(List<PO> poList);
+	List<DTO> toDtoList(List<PO> poList);
 
-	List<PO> toPOList(List<DTO> dtoList);
+	List<PO> toPoList(List<DTO> dtoList);
 
-	void updatePO(@MappingTarget PO po, DTO dto);
+	void updatePo(@MappingTarget PO po, DTO dto);
 }

@@ -5,15 +5,12 @@ import lombok.Data;
 
 @Data
 public class ApiCategoryUpdateReqDTO {
-    @NotBlank(message = "ID不能为空")
-    private String id;
+	@NotBlank(message = "ID不能为空")
+	private Long id;
 
-    @NotBlank(message = "分类名称不能为空")
-    private String categoryName;
+	@NotBlank(message = "分类名称不能为空")
+	private String name;
 
-    private String description;
+	private String description;
 
-    private Integer sort;
-
-    private Integer status;
 }

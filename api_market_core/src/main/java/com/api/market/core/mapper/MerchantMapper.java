@@ -19,5 +19,5 @@ public interface MerchantMapper extends BaseMapper<MerchantPO, MerchantResDTO> {
 
     @Mapping(target = "appKey", ignore = true)
     @Mapping(target = "appSecret", ignore = true)
-    void updateFromDTO(@MappingTarget MerchantPO po, MerchantUpdateReqDTO dto);
+    void fromUpdateDTO(@MappingTarget MerchantPO po, MerchantUpdateReqDTO dto);
 }

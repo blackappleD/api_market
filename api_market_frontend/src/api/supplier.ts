@@ -1,33 +1,41 @@
 import axios from '@/utils/axios';
-import { SupplierCreateReq, SupplierUpdateReq, SupplierQueryReq } from '@/types/supplier';
+import type { Supplier, SupplierCreateReq, SupplierUpdateReq, SupplierQueryReq } from '@/types/supplier';
+import type { Page } from '@/types/common';
 
 export const supplierApi = {
     create(data: SupplierCreateReq) {
-        return axios.post('/mg/supplier', data);
+        return axios.post<Supplier>('/supplier', data);
     },
     
     update(data: SupplierUpdateReq) {
-        return axios.put('/mg/supplier', data);
+        return axios.put<Supplier>('/supplier', data);
     },
     
     page(params: SupplierQueryReq) {
-        return axios.get('/mg/supplier/page', { params });
+        const { pageNum, pageSize, ...rest } = params;
+        return axios.get<Page<Supplier>>('/supplier/page', { 
+            params: {
+                ...rest,
+                pageNum: pageNum - 1,
+                pageSize
+            }
+        });
     },
 
-    getById(id: string) {
-        return axios.get(`/mg/supplier/${id}`);
+    getById(id: number) {
+        return axios.get<Supplier>(`/supplier/${id}`);
     },
 
-    batchEnable(ids: string[]) {
-        return axios.post('/mg/supplier/batch-enable', ids);
+    batchEnable(ids: number[]) {
+        return axios.post('/supplier/batch-enable', ids);
     },
 
-    batchDisable(ids: string[]) {
-        return axios.post('/mg/supplier/batch-disable', ids);
+    batchDisable(ids: number[]) {
+        return axios.post('/supplier/batch-disable', ids);
     },
 
     export(params: SupplierQueryReq) {
-        return axios.get('/mg/supplier/export', {
+        return axios.get('/supplier/export', {
             params,
             responseType: 'blob'
         });
@@ -36,7 +44,7 @@ export const supplierApi = {
     import(file: File) {
         const formData = new FormData();
         formData.append('file', file);
-        return axios.post('/mg/supplier/import', formData, {
+        return axios.post('/supplier/import', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }

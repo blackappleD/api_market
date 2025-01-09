@@ -4,7 +4,7 @@ import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONUtil;
 import com.api.market.core.annotations.PkResponseBody;
 import com.api.market.core.annotations.PkResponseBodyIgnore;
-import com.api.market.core.dto.base.BaseResponseDTO;
+import com.api.market.core.dto.base.BaseResDTO;
 import com.api.market.core.exception.ApiMarketException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -65,13 +65,13 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
 	public Object beforeBodyWrite(@Nullable Object body, MethodParameter returnType, MediaType selectedContentType,
 	                              Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
 	                              ServerHttpResponse response) {
-		if (body instanceof BaseResponseDTO) {
+		if (body instanceof BaseResDTO) {
 			return body;
 		}
 		if (StringHttpMessageConverter.class.isAssignableFrom(selectedConverterType)) {
-			return JSONUtil.toJsonStr(BaseResponseDTO.success(body));
+			return JSONUtil.toJsonStr(BaseResDTO.success(body));
 		}
-		return BaseResponseDTO.success(body);
+		return BaseResDTO.success(body);
 	}
 
 	@ExceptionHandler(ApiMarketException.class)
@@ -83,7 +83,7 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
 			log.debug(ex.getMessage(), ex);
 		}
 		// 非生产环境需要打印堆栈
-		return BaseResponseDTO.fail(ex.getCode(), ex.getMessage(), isProdOrPre() ? null : ex);
+		return BaseResDTO.fail(ex.getCode(), ex.getMessage(), isProdOrPre() ? null : ex);
 	}
 
 	@ExceptionHandler(ApiMarketException.LoginException.class)
@@ -94,7 +94,7 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
 		} else {
 			log.debug(ex.getMessage(), ex);
 		}
-		return BaseResponseDTO.fail(ex.getCode(), ex.getMessage());
+		return BaseResDTO.fail(ex.getCode(), ex.getMessage());
 	}
 
 //	@ExceptionHandler(Throwable.class)
@@ -115,6 +115,6 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public Object maxUploadSizeExceededExceptionHandler(MaxUploadSizeExceededException ex) {
 		log.error(ex.getMessage(), ex);
-		return BaseResponseDTO.fail(ApiMarketException.DEFAULT_CODE, "文件大小超出限制");
+		return BaseResDTO.fail(ApiMarketException.DEFAULT_CODE, "文件大小超出限制");
 	}
 }

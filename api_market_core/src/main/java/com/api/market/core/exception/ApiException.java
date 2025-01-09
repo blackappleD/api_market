@@ -13,10 +13,6 @@ public class ApiException extends RuntimeException {
         return new ApiException("API编码已存在");
     }
 
-    public static ApiException categoryNotFound() {
-        return new ApiException("API分类不存在");
-    }
-
     public static ApiException apiDisabled() {
         return new ApiException("API已禁用");
     }

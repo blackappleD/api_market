@@ -7,7 +7,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class BaseResponseDTO<T> {
+public class BaseResDTO<T> {
 	private Integer code;
 
 	private String message;
@@ -16,19 +16,19 @@ public class BaseResponseDTO<T> {
 
 	private List<String> stackTraces;
 
-	public static <T> BaseResponseDTO<T> success(T data) {
-		BaseResponseDTO<T> response = new BaseResponseDTO<>();
+	public static <T> BaseResDTO<T> success(T data) {
+		BaseResDTO<T> response = new BaseResDTO<>();
 		response.code = 200;
 		response.data = data;
 		return response;
 	}
 
-	public static <T> BaseResponseDTO<T> fail(Integer code, String msg) {
+	public static <T> BaseResDTO<T> fail(Integer code, String msg) {
 		return fail(code, msg, null);
 	}
 
-	public static <T> BaseResponseDTO<T> fail(Integer code, String msg, Throwable ex) {
-		BaseResponseDTO<T> response = new BaseResponseDTO<>();
+	public static <T> BaseResDTO<T> fail(Integer code, String msg, Throwable ex) {
+		BaseResDTO<T> response = new BaseResDTO<>();
 		response.code = code;
 		response.message = msg;
 

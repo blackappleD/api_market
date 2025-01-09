@@ -1,12 +1,16 @@
 package com.api.market.core.po;
 
+import com.api.market.core.po.base.BasePO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.FieldNameConstants;
+import org.hibernate.annotations.Comment;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
+@FieldNameConstants
 @Table(name = ApiCategoryPO.TABLE_NAME)
 public class ApiCategoryPO extends BasePO.CommonPO<Long> {
 
@@ -16,16 +20,15 @@ public class ApiCategoryPO extends BasePO.CommonPO<Long> {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "category_name", nullable = false, length = 50)
-	private String categoryName;
+	@Comment("接口分类名称")
+	@Column(nullable = false, length = 50)
+	private String name;
 
-	@Column(name = "parent_id", length = 32)
-	private String parentId;
+	@Column(length = 500)
+	@Comment("描述")
+	private String description;
 
-	@Column(name = "sort_order", nullable = false)
-	private Integer sortOrder = 0;
-
-	@Column(name = "status", nullable = false)
-	private Integer status = 1;
+	@Column(nullable = false)
+	private Boolean enable = true;
 
 }

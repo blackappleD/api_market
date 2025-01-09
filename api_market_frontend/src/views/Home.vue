@@ -1,257 +1,169 @@
 <template>
-    <div class="home-container">
-        <div class="nav-bar">
-            <router-link to="/" class="nav-item active">首页</router-link>
-            <router-link to="/subscribe" class="nav-item">物品订阅</router-link>
-            <router-link to="/realtime" class="nav-item">实时物价</router-link>
+  <el-container class="layout-container">
+    <!-- 侧边栏 -->
+    <el-aside width="220px" class="aside">
+      <div class="logo">
+        <img src="@/assets/logo.svg" alt="logo">
+        <span>API Market</span>
+      </div>
+      <el-menu
+        :router="true"
+        :default-active="$route.path"
+        class="menu"
+        background-color="#001529"
+        text-color="#fff"
+        active-text-color="#409EFF"
+      >
+        <el-menu-item index="/supplier">
+          <el-icon><User /></el-icon>
+          <span>供应商管理</span>
+        </el-menu-item>
+        <el-sub-menu index="/api">
+          <template #title>
+            <el-icon><Connection /></el-icon>
+            <span>API管理</span>
+          </template>
+          <el-menu-item index="/api/category">API分类管理</el-menu-item>
+          <el-menu-item index="/api">API列表</el-menu-item>
+        </el-sub-menu>
+      </el-menu>
+    </el-aside>
+
+    <!-- 主要内容区 -->
+    <el-container>
+      <!-- 头部 -->
+      <el-header class="header">
+        <div class="header-left">
+          <el-icon class="collapse-btn" @click="isCollapse = !isCollapse">
+            <Fold v-if="!isCollapse"/>
+            <Expand v-else/>
+          </el-icon>
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>{{ currentRoute }}</el-breadcrumb-item>
+          </el-breadcrumb>
         </div>
-        <div class="content">
-            <template v-if="!isLoggedIn">
-                <h1 class="title">首页</h1>
-                <div class="button-group">
-                    <button class="login-btn" @click="goToLogin">登录</button>
-                    <button class="register-btn" @click="goToRegister">注册</button>
-                </div>
+        <div class="header-right">
+          <el-dropdown>
+            <span class="user-info">
+              <el-avatar :size="32" icon="UserFilled" />
+              <span class="username">Admin</span>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item>个人信息</el-dropdown-item>
+                <el-dropdown-item>修改密码</el-dropdown-item>
+                <el-dropdown-item divided>退出登录</el-dropdown-item>
+              </el-dropdown-menu>
             </template>
-            <template v-else>
-                <div class="user-profile">
-                    <div class="avatar">
-                        <span class="avatar-text">头像</span>
-                    </div>
-                    <div class="user-info">
-                        <h2 class="username">{{ username }}</h2>
-                        <p class="email">{{ email }}</p>
-                        <button class="logout-btn" @click="handleLogout">退出登录</button>
-                    </div>
-                </div>
-            </template>
+          </el-dropdown>
         </div>
-    </div>
+      </el-header>
+
+      <!-- 内容区 -->
+      <el-main class="main">
+        <router-view />
+      </el-main>
+    </el-container>
+  </el-container>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed, ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { useStore } from 'vuex';
-import { RootState } from '@/store/types';
-import axios from '@/utils/axios';
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { User, Connection, Fold, Expand } from '@element-plus/icons-vue'
 
-export default defineComponent({
-    name: 'HomePage',
-    setup() {
-        const router = useRouter();
-        const store = useStore<RootState>();
-        const userInfo = ref<any>(null);
+const isCollapse = ref(false)
+const route = useRoute()
 
-        const isLoggedIn = computed(() => store.state.auth.isLoggedIn);
-        const username = computed(() => store.state.auth.username);
-        const email = computed(() => store.state.auth.email);
-
-        const goToLogin = () => {
-            router.push('/login');
-        };
-
-        const goToRegister = () => {
-            router.push('/register');
-        };
-
-        const handleLogout = async () => {
-            try {
-                await axios.post('/ff14/user/logout');
-                store.commit('auth/logout');
-                delete axios.defaults.headers.common['Authorization'];
-                router.push('/login');
-            } catch (error) {
-                console.error('退出登录失败:', error);
-            }
-        };
-
-        const fetchUserInfo = async () => {
-            try {
-                const response = await axios.get('/ff14/user/info');
-                userInfo.value = response.data.data;
-                if (userInfo.value) {
-                    store.commit('auth/setUser', {
-                        userName: userInfo.value.userName,
-                        email: userInfo.value.email
-                    });
-                }
-            } catch (error) {
-                console.error('获取用户信息失败:', error);
-            }
-        };
-
-        onMounted(() => {
-            if (isLoggedIn.value) {
-                fetchUserInfo();
-            }
-        });
-
-        return {
-            isLoggedIn,
-            username,
-            email,
-            goToLogin,
-            goToRegister,
-            handleLogout
-        };
-    }
-});
+const currentRoute = computed(() => {
+  const matched = route.matched
+  return matched[matched.length - 1]?.meta?.title || '首页'
+})
 </script>
 
 <style scoped>
-.home-container {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background-color: #ffffff;
+.layout-container {
+  height: 100vh;
 }
 
-.nav-bar {
-    padding: 15px 0;
-    display: flex;
-    gap: 30px;
-    border-bottom: 1px solid #eee;
-    margin-left: 20px;
+.aside {
+  background-color: #001529;
+  transition: width 0.3s;
+  overflow: hidden;
 }
 
-.nav-item {
-    text-decoration: none;
-    color: #666;
-    font-size: 14px;
-    padding: 0;
-    transition: all 0.3s ease;
-    position: relative;
+.logo {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid #002140;
 }
 
-.nav-item:hover {
-    color: #4285f4;
+.logo img {
+  width: 32px;
+  height: 32px;
+  margin-right: 12px;
 }
 
-.nav-item.active {
-    color: #4285f4;
-    font-weight: normal;
+.menu {
+  border: none;
 }
 
-.nav-item.active::after {
-    content: '';
-    position: absolute;
-    bottom: -16px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background-color: #4285f4;
+.header {
+  background-color: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
 }
 
-.content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-top: -100px;
+.header-left {
+  display: flex;
+  align-items: center;
 }
 
-.title {
-    font-size: 36px;
-    color: #333;
-    margin-bottom: 60px;
-    font-weight: normal;
+.collapse-btn {
+  font-size: 20px;
+  cursor: pointer;
+  margin-right: 20px;
 }
 
-.button-group {
-    display: flex;
-    gap: 30px;
-}
-
-.login-btn,
-.register-btn {
-    padding: 12px 50px;
-    font-size: 14px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 120px;
-}
-
-.login-btn {
-    background-color: #4285f4;
-    color: white;
-}
-
-.login-btn:hover {
-    background-color: #3367d6;
-}
-
-.register-btn {
-    background-color: #e0e0e0;
-    color: #333;
-}
-
-.register-btn:hover {
-    background-color: #d0d0d0;
-}
-
-.user-profile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-}
-
-.avatar {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background-color: #e0e0e0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.avatar-text {
-    color: #666;
-    font-size: 14px;
+.header-right {
+  display: flex;
+  align-items: center;
 }
 
 .user-info {
-    text-align: center;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 }
 
 .username {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 10px;
-    font-weight: normal;
+  margin-left: 8px;
+  font-size: 14px;
 }
 
-.email {
-    font-size: 14px;
-    color: #666;
+.main {
+  background-color: #f0f2f5;
+  padding: 20px;
 }
 
-.logout-btn {
-    margin-top: 20px;
-    padding: 8px 24px;
-    background-color: #f44336;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
+:deep(.el-menu-item.is-active) {
+  background-color: #1890ff !important;
 }
 
-.logout-btn:hover {
-    background-color: #d32f2f;
+:deep(.el-menu-item:hover) {
+  background-color: #001f3d !important;
 }
 
-.user-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
+:deep(.el-sub-menu__title:hover) {
+  background-color: #001f3d !important;
 }
 </style>

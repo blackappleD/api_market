@@ -10,7 +10,27 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+    children: [
+      {
+        path: '/supplier',
+        name: 'SupplierList',
+        component: () => import('@/views/supplier/SupplierList.vue'),
+        meta: { title: '供应商管理' }
+      },
+      {
+        path: '/api',
+        name: 'ApiList',
+        component: () => import('@/views/api/ApiList.vue'),
+        meta: { title: 'API管理' }
+      },
+      {
+        path: '/api/category',
+        name: 'ApiCategoryList',
+        component: () => import('@/views/api/category/ApiCategoryList.vue'),
+        meta: { title: 'API分类管理' }
+      }
+    ]
   },
   {
     path: '/subscribe',
@@ -37,12 +57,6 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/:pathMatch(.*)*',
     redirect: '/'
-  },
-  {
-    path: 'supplier',
-    name: 'SupplierList',
-    component: () => import('@/views/supplier/SupplierList.vue'),
-    meta: { title: '供应商管理' }
   }
 ]
 

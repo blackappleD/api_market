@@ -7,8 +7,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class MerchantQueryReqDTO extends BasePageReqDTO {
-    private String merchantName;
-    private String merchantCode;
-    private String contactName;
-    private Integer status;
+	private String name;
+	private String merCode;
+	private Boolean enable;
 }

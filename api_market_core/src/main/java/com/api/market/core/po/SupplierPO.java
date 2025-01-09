@@ -1,37 +1,59 @@
 package com.api.market.core.po;
 
+import com.api.market.core.po.base.BasePO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.FieldNameConstants;
+import org.hibernate.annotations.Comment;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(name = SupplierPO.TABLE_NAME)
+@FieldNameConstants
 public class SupplierPO extends BasePO.CommonPO<Long> {
 
-    public static final String TABLE_NAME = "am_supplier";
+	public static final String TABLE_NAME = "am_supplier";
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(name = "supplier_name", nullable = false, length = 100)
-    private String supplierName;
+	@Comment("供应商名称")
+	@Column(nullable = false, length = 100)
+	private String name;
 
-    @Column(name = "supplier_code", nullable = false, length = 50, unique = true)
-    private String supplierCode;
+	@Comment("供应商编码")
+	@Column(nullable = false, length = 50, unique = true)
+	private String supCode;
 
-    @Column(name = "contact_name", length = 50)
-    private String contactName;
+	@Comment("备注/描述")
+	@Column(length = 1000)
+	private String description;
 
-    @Column(name = "contact_phone", length = 20)
-    private String contactPhone;
+	@Comment("供应商联系人姓名")
+	@Column(length = 50)
+	private String contactName;
 
-    @Column(name = "contact_email", length = 100)
-    private String contactEmail;
+	@Comment("供应商联系电话")
+	@Column(length = 20)
+	private String contactPhone;
 
-    @Column(name = "status", nullable = false)
-    private Integer status = 1;
+	@Comment("供应商联系邮箱")
+	@Column(length = 100)
+	private String contactEmail;
+
+	@Comment("供应商AppKey")
+	@Column(length = 1000)
+	private String appKey;
+
+	@Comment("供应商AppSecret")
+	@Column(length = 1000)
+	private String appSecret;
+
+	@Comment("是否启用")
+	@Column(nullable = false)
+	private Boolean enable = true;
 
 }

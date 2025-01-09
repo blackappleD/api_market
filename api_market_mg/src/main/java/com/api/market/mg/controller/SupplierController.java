@@ -1,61 +1,71 @@
 package com.api.market.mg.controller;
 
-import com.api.market.core.dto.supplier.*;
+import com.api.market.core.annotations.PkResponseBody;
+import com.api.market.core.dto.BatchEnableLongIdReqDTO;
+import com.api.market.core.dto.base.PageDTO;
+import com.api.market.core.dto.supplier.SupplierCreateReqDTO;
+import com.api.market.core.dto.supplier.SupplierQueryReqDTO;
+import com.api.market.core.dto.supplier.SupplierResDTO;
+import com.api.market.core.dto.supplier.SupplierUpdateReqDTO;
 import com.api.market.core.service.SupplierService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-import java.io.IOException;
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
+@Tag(name = "供应商管理", description = "供应商相关接口")
 @RestController
 @RequestMapping("/supplier")
+@PkResponseBody
 public class SupplierController {
 
-    @Resource
-    private SupplierService supplierService;
+	@Resource
+	private SupplierService supplierService;
 
-    @PostMapping
-    public SupplierResDTO create(@Valid @RequestBody SupplierCreateReqDTO dto) {
-        return supplierService.create(dto);
-    }
+	@Operation(summary = "创建供应商")
+	@PostMapping
+	public Long create(@Valid @RequestBody SupplierCreateReqDTO req) {
+		return supplierService.create(req);
+	}
 
-    @PutMapping
-    public SupplierResDTO update(@Valid @RequestBody SupplierUpdateReqDTO dto) {
-        return supplierService.update(dto);
-    }
+	@Operation(summary = "更新供应商")
+	@PutMapping
+	public void update(@Valid @RequestBody SupplierUpdateReqDTO req) {
+		supplierService.update(req);
+	}
 
-    @GetMapping("/page")
-    public Page<SupplierResDTO> page(@Valid SupplierQueryReqDTO dto) {
-        return supplierService.query(dto);
-    }
+	@Operation(summary = "根据ID获取供应商")
+	@GetMapping("/{id}")
+	public SupplierResDTO getById(@PathVariable Long id) {
+		return supplierService.get(id);
+	}
 
-    @GetMapping("/{id}")
-    public SupplierResDTO getById(@PathVariable String id) {
-        return supplierService.findById(id)
-                .map(supplierMapper::toDTO)
-                .orElseThrow(SupplierException::notFound);
-    }
+	@Operation(summary = "分页查询供应商列表")
+	@PostMapping("/page")
+	public PageDTO<SupplierResDTO> page(@Valid @RequestBody SupplierQueryReqDTO req) {
+		return supplierService.search(req);
+	}
 
-    @PostMapping("/batch-enable")
-    public void batchEnable(@RequestBody List<String> ids) {
-        supplierService.batchUpdateStatus(ids, 1);
-    }
+	@Operation(summary = "批量启用/通用供应商")
+	@PostMapping("/enable")
+	public void batchEnable(@RequestBody BatchEnableLongIdReqDTO dto) {
+		supplierService.batchUpdateStatus(dto);
+	}
 
-    @PostMapping("/batch-disable")
-    public void batchDisable(@RequestBody List<String> ids) {
-        supplierService.batchUpdateStatus(ids, 0);
-    }
+	@Operation(summary = "导出供应商数据")
+	@GetMapping("/export")
+	public void export(SupplierQueryReqDTO req, HttpServletResponse response) throws IOException {
+		supplierService.export(req, response);
+	}
 
-    @GetMapping("/export")
-    public void export(SupplierQueryReqDTO dto, HttpServletResponse response) throws IOException {
-        supplierService.export(dto, response);
-    }
-
-    @PostMapping("/import")
-    public void importData(MultipartFile file) throws IOException {
-        supplierService.importData(file);
-    }
+	@Operation(summary = "导入供应商数据")
+	@PostMapping("/import")
+	public void importData(@RequestParam("file") MultipartFile file) throws IOException {
+		supplierService.importData(file);
+	}
 }

@@ -1,13 +1,16 @@
 package com.api.market.core.po;
 
+import com.api.market.core.po.base.BasePO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.FieldNameConstants;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(name = MerchantPO.TABLE_NAME)
+@FieldNameConstants
 public class MerchantPO extends BasePO.CommonPO<Long> {
 
 	public static final String TABLE_NAME = "am_merchant";
@@ -16,28 +19,28 @@ public class MerchantPO extends BasePO.CommonPO<Long> {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "merchant_name", nullable = false, length = 100)
-	private String merchantName;
+	@Column(nullable = false, length = 100)
+	private String name;
 
-	@Column(name = "merchant_code", nullable = false, length = 50, unique = true)
-	private String merchantCode;
+	@Column(nullable = false, length = 50, unique = true)
+	private String merCode;
 
-	@Column(name = "contact_name", length = 50)
+	@Column(length = 50)
 	private String contactName;
 
-	@Column(name = "contact_phone", length = 20)
+	@Column(length = 20)
 	private String contactPhone;
 
-	@Column(name = "contact_email", length = 100)
+	@Column(length = 100)
 	private String contactEmail;
 
-	@Column(name = "app_key", nullable = false, length = 50, unique = true)
+	@Column(nullable = false, length = 50, unique = true)
 	private String appKey;
 
-	@Column(name = "app_secret", nullable = false, length = 100)
+	@Column(nullable = false, length = 100)
 	private String appSecret;
 
-	@Column(name = "status", nullable = false)
-	private Integer status = 1;
+	@Column(nullable = false)
+	private Boolean enable = true;
 
 }

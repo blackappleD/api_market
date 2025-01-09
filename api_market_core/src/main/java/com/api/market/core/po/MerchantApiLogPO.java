@@ -1,8 +1,10 @@
 package com.api.market.core.po;
 
+import com.api.market.core.po.base.BasePO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.FieldNameConstants;
 
 import java.time.LocalDateTime;
 
@@ -10,9 +12,11 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = MerchantApiLogPO.TABLE_NAME)
+@FieldNameConstants
 public class MerchantApiLogPO extends BasePO.CommonPO<Long> {
 
 	public static final String TABLE_NAME = "am_merchant_api_log";
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -20,8 +24,14 @@ public class MerchantApiLogPO extends BasePO.CommonPO<Long> {
 	@Column(nullable = false)
 	private Long merchantId;
 
+	@Column(nullable = false, length = 60)
+	private String merchantName;
+
 	@Column(nullable = false)
-	private String apiId;
+	private Long apiId;
+
+	@Column(nullable = false)
+	private String apiName;
 
 	@Column(nullable = false)
 	private LocalDateTime requestTime;
@@ -33,13 +43,13 @@ public class MerchantApiLogPO extends BasePO.CommonPO<Long> {
 	private Integer duration;
 
 	@Column(columnDefinition = "TEXT")
-	private String requestParams;
+	private String requestJson;
 
 	@Column(columnDefinition = "TEXT")
-	private String responseData;
+	private String responseJson;
 
 	@Column(nullable = false)
-	private Integer status;
+	private String resCode;
 
 	@Column(length = 500)
 	private String errorMsg;

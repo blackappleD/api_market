@@ -7,8 +7,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ApiQueryReqDTO extends BasePageReqDTO {
-    private String apiName;
-    private String apiCode;
-    private String categoryId;
-    private Integer status;
+	private Long categoryId;
+	private Boolean enable;
 }

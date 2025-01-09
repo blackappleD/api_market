@@ -1,12 +1,10 @@
 export interface Supplier {
-    id: string;
+    id: number;
     supplierName: string;
     supplierCode: string;
-    description?: string;
-    contactName?: string;
-    contactPhone?: string;
-    contactEmail?: string;
-    address?: string;
+    contactName: string;
+    contactPhone: string;
+    contactEmail: string;
     status: number;
     createTime: string;
     updateTime: string;
@@ -15,29 +13,25 @@ export interface Supplier {
 export interface SupplierCreateReq {
     supplierName: string;
     supplierCode: string;
-    description?: string;
-    contactName?: string;
-    contactPhone?: string;
-    contactEmail?: string;
-    address?: string;
+    contactName: string;
+    contactPhone: string;
+    contactEmail: string;
 }
 
 export interface SupplierUpdateReq {
-    id: string;
+    id: number;
     supplierName: string;
-    description?: string;
+    supplierCode?: string;
     contactName?: string;
     contactPhone?: string;
     contactEmail?: string;
-    address?: string;
     status?: number;
 }
 
 export interface SupplierQueryReq {
-    pageNum?: number;
-    pageSize?: number;
+    pageNum: number;
+    pageSize: number;
     supplierName?: string;
     supplierCode?: string;
-    contactName?: string;
     status?: number;
 } 

@@ -10,7 +10,7 @@ public class MerchantUpdateReqDTO {
 	private Long id;
 
 	@NotBlank(message = "商户名称不能为空")
-	private String merchantName;
+	private String name;
 
 	private String contactName;
 
@@ -19,5 +19,5 @@ public class MerchantUpdateReqDTO {
 	@Email(message = "邮箱格式不正确")
 	private String contactEmail;
 
-	private Integer status;
+	private Boolean enable;
 }

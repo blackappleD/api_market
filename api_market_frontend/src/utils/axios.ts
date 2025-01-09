@@ -1,35 +1,20 @@
 import axios from 'axios';
-import store from '@/store';
+import { ElMessage } from 'element-plus';
 import router from '@/router';
 
 const instance = axios.create({
-    baseURL: process.env.VUE_APP_API_URL,
     timeout: 10000,
-    withCredentials: true,
-    headers: {
-        'Content-Type': 'application/json'
-    }
+    withCredentials: true
 });
 
 // 请求拦截器
 instance.interceptors.request.use(
     config => {
-        const token = store.state.auth.token;
-        if (token && config.headers) {
-            try {
-                // 添加 token 到请求头
-                config.headers.Authorization = `Bearer ${token}`;
-            } catch (error) {
-                console.error('设置请求头失败:', error);
-            }
-        }
-        // 确保 API 请求路径正确
-        if (config.url && !config.url.startsWith('http')) {
-            config.url = `${process.env.VUE_APP_API_URL}${config.url}`;
-        }
+        // 可以在这里添加loading状态
         return config;
     },
     error => {
+        console.error('Request error:', error);
         return Promise.reject(error);
     }
 );
@@ -37,16 +22,41 @@ instance.interceptors.request.use(
 // 响应拦截器
 instance.interceptors.response.use(
     response => {
-        // 打印响应数据，用于调试
-        console.log('Response:', response);
-        return response;
+        const res = response.data;
+        
+        // 这里可以根据后端的响应结构进行适配
+        if (res.code === 0 || res.code === 200) {
+            return res.data;
+        }
+        
+        ElMessage.error(res.message || '请求失败');
+        return Promise.reject(new Error(res.message || '请求失败'));
     },
     error => {
-        console.error('Request error:', error);
-        if (error.response?.status === 401) {
-            store.commit('auth/logout');
-            router.push('/login');
+        console.error('Response error:', error);
+        
+        if (error.response) {
+            switch (error.response.status) {
+                case 401:
+                    ElMessage.error('未登录或登录已过期');
+                    router.push('/login');
+                    break;
+                case 403:
+                    ElMessage.error('没有权限访问');
+                    break;
+                case 404:
+                    ElMessage.error('请求的资源不存在');
+                    break;
+                case 500:
+                    ElMessage.error('服务器错误，请稍后重试');
+                    break;
+                default:
+                    ElMessage.error(error.response.data?.message || '请求失败');
+            }
+        } else {
+            ElMessage.error('网络错误，请检查网络连接');
         }
+        
         return Promise.reject(error);
     }
 );

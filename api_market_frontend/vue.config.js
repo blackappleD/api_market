@@ -1,17 +1,14 @@
 const { defineConfig } = require('@vue/cli-service');
-const path = require('path');
 
 module.exports = defineConfig({
   transpileDependencies: true,
-  publicPath: process.env.NODE_ENV === 'production' ? '/ff14_market/' : '/',
-  outputDir: 'dist',
-  assetsDir: 'static',
-  productionSourceMap: false,
   chainWebpack: config => {
-    config.plugin('html').tap(args => {
-      args[0].title = '最终幻想14实时物价订阅';
-      return args;
-    });
+    config.module
+      .rule('svg')
+      .type('asset/resource')
+      .set('generator', {
+        filename: 'img/[name].[hash:8][ext]'
+      });
   },
   devServer: {
     port: 3000,
@@ -21,10 +18,23 @@ module.exports = defineConfig({
       ]
     },
     proxy: {
-      '/ff14': {
+      '/mg': {
         target: 'http://localhost:18888',
         changeOrigin: true,
-        ws: true
+        pathRewrite: {
+          '^/mg': '/mg'
+        },
+        logLevel: 'debug'
+      }
+    }
+  },
+  css: {
+    loaderOptions: {
+      scss: {
+        additionalData: `
+          @import "@/assets/styles/variables.scss";
+          @import "@/assets/styles/mixins.scss";
+        `
       }
     }
   }

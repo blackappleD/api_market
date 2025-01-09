@@ -16,7 +16,7 @@ public class MerchantApiLogResDTO {
 	private Integer duration;
 	private String requestParams;
 	private String responseData;
-	private Integer status;
+	private String resCode;
 	private String errorMsg;
 	private LocalDateTime createTime;
 }

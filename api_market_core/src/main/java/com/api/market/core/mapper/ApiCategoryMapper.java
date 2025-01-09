@@ -11,9 +11,8 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface ApiCategoryMapper extends BaseMapper<ApiCategoryPO, ApiCategoryResDTO> {
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", constant = "1")
-    ApiCategoryPO fromCreateDTO(ApiCategoryCreateReqDTO dto);
+	@Mapping(target = "id", ignore = true)
+	ApiCategoryPO fromCreateDTO(ApiCategoryCreateReqDTO dto);
 
-    void updateFromDTO(@MappingTarget ApiCategoryPO po, ApiCategoryUpdateReqDTO dto);
+	void fromUpdateDTO(@MappingTarget ApiCategoryPO po, ApiCategoryUpdateReqDTO dto);
 }

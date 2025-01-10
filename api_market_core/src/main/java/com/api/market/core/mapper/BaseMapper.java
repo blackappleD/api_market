@@ -1,18 +1,20 @@
 package com.api.market.core.mapper;
 
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
-public interface BaseMapper<PO, DTO> {
+public interface BaseMapper<PO, ResDTO, CreateDTO, UpdateDTO> {
 
-	DTO toDto(PO po);
+	ResDTO toDto(PO po);
 
-	PO toPo(DTO dto);
+	List<ResDTO> toDtoList(List<PO> poList);
 
-	List<DTO> toDtoList(List<PO> poList);
 
-	List<PO> toPoList(List<DTO> dtoList);
+	@Mapping(target = "id", ignore = true)
+	PO fromCreateDTO(CreateDTO dto);
 
-	void updatePo(@MappingTarget PO po, DTO dto);
+	void fromUpdateDTO(@MappingTarget PO po, UpdateDTO dto);
+
 }

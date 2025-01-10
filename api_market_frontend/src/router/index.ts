@@ -1,83 +1,81 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import Home from '@/views/Home.vue'
-import Subscribe from '@/views/Subscribe.vue'
-import Login from '@/views/Login.vue'
-import Register from '@/views/Register.vue'
-import RealTimePrice from '@/views/RealTimePrice.vue'
-import store from '@/store'
+import { createRouter, createWebHistory } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
 
-const routes: Array<RouteRecordRaw> = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home,
-    children: [
-      {
-        path: '/supplier',
-        name: 'SupplierList',
-        component: () => import('@/views/supplier/SupplierList.vue'),
-        meta: { title: '供应商管理' }
-      },
-      {
-        path: '/api',
-        name: 'ApiList',
-        component: () => import('@/views/api/ApiList.vue'),
-        meta: { title: 'API管理' }
-      },
-      {
-        path: '/api/category',
-        name: 'ApiCategoryList',
-        component: () => import('@/views/api/category/ApiCategoryList.vue'),
-        meta: { title: 'API分类管理' }
-      }
-    ]
-  },
-  {
-    path: '/subscribe',
-    name: 'Subscribe',
-    component: Subscribe,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: Login
-  },
-  {
-    path: '/register',
-    name: 'Register',
-    component: Register
-  },
-  {
-    path: '/realtime',
-    name: 'RealTimePrice',
-    component: RealTimePrice,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/:pathMatch(.*)*',
-    redirect: '/'
-  }
+const routes: RouteRecordRaw[] = [
+    {
+        path: '/',
+        component: () => import('@/views/Home.vue'),
+        redirect: '/supplier',
+        children: [
+            // 供应商管理
+            {
+                path: '/supplier',
+                name: 'Supplier',
+                component: () => import('@/views/supplier/SupplierList.vue')
+            },
+            {
+                path: '/supplier-product',
+                name: 'SupplierProduct',
+                component: () => import('@/views/supplier/SupplierProductList.vue')
+            },
+            
+            // API管理
+            {
+                path: '/api-category',
+                name: 'ApiCategory',
+                component: () => import('@/views/api/ApiCategoryList.vue')
+            },
+            {
+                path: '/api',
+                name: 'Api',
+                component: () => import('@/views/api/ApiList.vue')
+            },
+            
+            // 商户管理
+            {
+                path: '/merchant',
+                name: 'Merchant',
+                component: () => import('@/views/merchant/MerchantList.vue')
+            },
+            {
+                path: '/merchant-log',
+                name: 'MerchantLog',
+                component: () => import('@/views/merchant/MerchantLogList.vue')
+            },
+            {
+                path: '/merchant-stats',
+                name: 'MerchantStats',
+                component: () => import('@/views/merchant/MerchantStatsList.vue')
+            },
+            {
+                path: '/merchant-api-log',
+                name: 'MerchantApiLog',
+                component: () => import('@/views/merchant/MerchantApiLogList.vue')
+            }
+        ]
+    },
+    {
+        path: '/login',
+        name: 'Login',
+        component: () => import('@/views/login/Login.vue')
+    }
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes
+    history: createWebHistory(),
+    routes
 })
 
+// 路由守卫
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (!store.state.auth.isLoggedIn) {
-      next({
-        path: '/login',
-        query: { redirect: to.fullPath }
-      })
+    const token = localStorage.getItem('token')
+    if (to.path === '/login') {
+        next()
+    } else if (!token) {
+        next('/login')
     } else {
-      next()
+        next()
     }
-  } else {
-    next()
-  }
 })
 
 export default router 

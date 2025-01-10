@@ -1,5 +1,6 @@
 package com.api.market.mg.controller;
 
+import com.api.market.core.annotations.PkAuthControl;
 import com.api.market.core.annotations.PkResponseBody;
 import com.api.market.core.dto.base.PageDTO;
 import com.api.market.core.dto.merchant.MerchantCreateReqDTO;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/merchant")
 @PkResponseBody
+@PkAuthControl
 public class MerchantController {
 
 	@Resource
@@ -37,6 +39,11 @@ public class MerchantController {
 	@GetMapping("/{id}")
 	public MerchantResDTO get(@PathVariable Long id) {
 		return merchantService.get(id);
+	}
+
+	@PostMapping("/{id}/send_email")
+	public void sendAkSkEmail(@PathVariable Long id) {
+		merchantService.sendAkSk(id);
 	}
 
 }

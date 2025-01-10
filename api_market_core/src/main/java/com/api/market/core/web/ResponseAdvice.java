@@ -6,6 +6,7 @@ import com.api.market.core.annotations.PkResponseBody;
 import com.api.market.core.annotations.PkResponseBodyIgnore;
 import com.api.market.core.dto.base.BaseResDTO;
 import com.api.market.core.exception.ApiMarketException;
+import com.api.market.core.exception.LoginException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.Order;
@@ -18,6 +19,7 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.lang.Nullable;
 import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -86,9 +88,15 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
 		return BaseResDTO.fail(ex.getCode(), ex.getMessage(), isProdOrPre() ? null : ex);
 	}
 
-	@ExceptionHandler(ApiMarketException.LoginException.class)
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public Object badRequestExceptionHandler(MethodArgumentNotValidException ex) {
+		return BaseResDTO.fail(400, ex.getDetailMessageArguments()[1].toString());
+	}
+
+	@ExceptionHandler(LoginException.class)
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)
-	public Object loginInvalidExceptionHandler(ApiMarketException.LoginException ex) {
+	public Object loginInvalidExceptionHandler(LoginException ex) {
 		if (ex.isLog()) {
 			log.error(ex.getMessage(), ex);
 		} else {

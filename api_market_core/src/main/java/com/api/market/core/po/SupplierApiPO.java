@@ -4,6 +4,7 @@ import com.api.market.core.po.base.BasePO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.FieldNameConstants;
 import org.hibernate.annotations.Comment;
 
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
+@FieldNameConstants
 @Table(name = SupplierApiPO.TABLE_NAME)
 public class SupplierApiPO extends BasePO.CommonPO<Long> {
 

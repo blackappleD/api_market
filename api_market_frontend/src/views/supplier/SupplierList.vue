@@ -1,121 +1,84 @@
 <template>
-    <div class="supplier-list">
-        <!-- 搜索区域 -->
-        <el-card class="search-card">
-            <el-form :inline="true" :model="queryForm" class="search-form">
-                <el-form-item label="供应商名称">
-                    <el-input v-model="queryForm.supplierName" placeholder="请输入供应商名称" clearable />
-                </el-form-item>
-                <el-form-item label="供应商编码">
-                    <el-input v-model="queryForm.supplierCode" placeholder="请输入供应商编码" clearable />
+    <div class="supplier-container">
+        <div class="search-bar">
+            <el-form :inline="true" :model="queryParams">
+                <el-form-item>
+                    <el-input v-model="queryParams.name" placeholder="供应商名称" clearable @keyup.enter="handleQuery" />
                 </el-form-item>
                 <el-form-item label="状态">
-                    <el-select v-model="queryForm.status" placeholder="请选择状态" clearable>
-                        <el-option label="启用" :value="1" />
-                        <el-option label="禁用" :value="0" />
+                    <el-select v-model="queryParams.enable" placeholder="请选择状态" clearable style="width: 120px"
+                        :popper-append-to-body="false">
+                        <el-option label="启用" :value="true" />
+                        <el-option label="禁用" :value="false" />
                     </el-select>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="handleSearch">
-                        <el-icon><Search /></el-icon>查询
-                    </el-button>
-                    <el-button @click="resetQuery">
-                        <el-icon><Refresh /></el-icon>重置
-                    </el-button>
+                    <el-button type="primary" @click="handleQuery">查询</el-button>
+                    <el-button @click="handleReset">重置</el-button>
                 </el-form-item>
             </el-form>
-            <div class="operation-group">
-                <el-button type="primary" @click="handleAdd">
-                    <el-icon><Plus /></el-icon>新增供应商
-                </el-button>
-                <el-button type="success" @click="handleExport">
-                    <el-icon><Download /></el-icon>导出
-                </el-button>
-                <el-button type="warning" @click="handleImport">
-                    <el-icon><Upload /></el-icon>导入
-                </el-button>
-            </div>
-        </el-card>
+        </div>
 
-        <!-- 表格区域 -->
-        <el-card class="table-card">
-            <el-table
-                v-loading="loading"
-                :data="tableData"
-                border
-                stripe
-                style="width: 100%"
-            >
-                <el-table-column type="selection" width="55" align="center" />
-                <el-table-column prop="supplierName" label="供应商名称" min-width="150" show-overflow-tooltip />
-                <el-table-column prop="supplierCode" label="供应商编码" min-width="120" />
-                <el-table-column prop="contactName" label="联系人" min-width="100" />
-                <el-table-column prop="contactPhone" label="联系电话" min-width="120" />
-                <el-table-column prop="contactEmail" label="联系邮箱" min-width="150" show-overflow-tooltip />
-                <el-table-column prop="status" label="状态" width="100" align="center">
-                    <template #default="{ row }">
-                        <el-tag :type="row.status === 1 ? 'success' : 'danger'">
-                            {{ row.status === 1 ? '启用' : '禁用' }}
-                        </el-tag>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="createTime" label="创建时间" width="180" />
-                <el-table-column label="操作" width="180" fixed="right" align="center">
-                    <template #default="{ row }">
-                        <el-button type="primary" link @click="handleEdit(row)">
-                            <el-icon><Edit /></el-icon>编辑
-                        </el-button>
-                        <el-button
-                            :type="row.status === 1 ? 'danger' : 'success'"
-                            link
-                            @click="handleStatusChange(row)"
-                        >
-                            {{ row.status === 1 ? '禁用' : '启用' }}
-                        </el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
+        <el-button type="primary" @click="handleAdd">新增供应商</el-button>
 
-            <!-- 分页 -->
-            <div class="pagination">
-                <el-pagination
-                    v-model:current-page="queryForm.pageNum"
-                    v-model:page-size="queryForm.pageSize"
-                    :total="total"
-                    :page-sizes="[10, 20, 50, 100]"
-                    layout="total, sizes, prev, pager, next, jumper"
-                    @size-change="handleSizeChange"
-                    @current-change="handleCurrentChange"
-                />
-            </div>
-        </el-card>
+        <el-table v-loading="loading" :data="tableData" style="margin-top: 20px">
+            <el-table-column type="selection" width="55" />
+            <el-table-column prop="name" label="供应商名称" min-width="120" />
+            <el-table-column prop="supCode" label="供应商编码" min-width="120" />
+            <el-table-column prop="description" label="描述" show-overflow-tooltip min-width="150" />
+            <el-table-column prop="contactName" label="联系人" min-width="100" />
+            <el-table-column prop="contactPhone" label="联系电话" min-width="120" />
+            <el-table-column prop="contactEmail" label="联系邮箱" min-width="150" show-overflow-tooltip />
+            <el-table-column prop="appKey" label="AppKey" min-width="200" show-overflow-tooltip />
+            <el-table-column prop="enable" label="状态" width="80" align="center">
+                <template #default="{ row }">
+                    <el-tag :type="row.enable ? 'success' : 'danger'">
+                        {{ row.enable ? '启用' : '禁用' }}
+                    </el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column prop="createTime" label="创建时间" width="180" />
+            <el-table-column label="操作" width="200">
+                <template #default="{ row }">
+                    <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
+                    <el-button link :type="row.enable ? 'danger' : 'success'" @click="handleToggleEnable(row)">
+                        {{ row.enable ? '禁用' : '启用' }}
+                    </el-button>
+                </template>
+            </el-table-column>
+        </el-table>
 
-        <!-- 新增/编辑对话框 -->
-        <el-dialog
-            :title="dialogType === 'add' ? '新增供应商' : '编辑供应商'"
-            v-model="dialogVisible"
-            width="500px"
-        >
-            <el-form
-                ref="formRef"
-                :model="form"
-                :rules="rules"
-                label-width="100px"
-            >
-                <el-form-item label="供应商名称" prop="supplierName">
-                    <el-input v-model="form.supplierName" />
+        <div class="pagination">
+            <el-pagination v-model:current-page="queryParams.page" v-model:page-size="queryParams.size"
+                :page-sizes="[10, 20, 50]" :total="total" layout="total, sizes, prev, pager, next"
+                @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+        </div>
+
+        <el-dialog :title="dialogTitle" v-model="dialogVisible" width="500px">
+            <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+                <el-form-item label="供应商名称" prop="name">
+                    <el-input v-model="form.name" placeholder="请输入供应商名称" />
                 </el-form-item>
-                <el-form-item label="供应商编码" prop="supplierCode" v-if="dialogType === 'add'">
-                    <el-input v-model="form.supplierCode" />
+                <el-form-item label="供应商编码" prop="supCode" v-if="!isEdit">
+                    <el-input v-model="form.supCode" placeholder="请输入供应商编码" />
                 </el-form-item>
-                <el-form-item label="联系人" prop="contactName">
-                    <el-input v-model="form.contactName" />
+                <el-form-item label="描述">
+                    <el-input v-model="form.description" type="textarea" placeholder="请输入描述" />
                 </el-form-item>
-                <el-form-item label="联系电话" prop="contactPhone">
-                    <el-input v-model="form.contactPhone" />
+                <el-form-item label="联系人">
+                    <el-input v-model="form.contactName" placeholder="请输入联系人" />
+                </el-form-item>
+                <el-form-item label="联系电话">
+                    <el-input v-model="form.contactPhone" placeholder="请输入联系电话" />
                 </el-form-item>
                 <el-form-item label="联系邮箱" prop="contactEmail">
-                    <el-input v-model="form.contactEmail" />
+                    <el-input v-model="form.contactEmail" placeholder="请输入联系邮箱" />
+                </el-form-item>
+                <el-form-item label="AppKey">
+                    <el-input v-model="form.appKey" placeholder="请输入AppKey" />
+                </el-form-item>
+                <el-form-item label="AppSecret">
+                    <el-input v-model="form.appSecret" placeholder="请输入AppSecret" />
                 </el-form-item>
             </el-form>
             <template #footer>
@@ -126,190 +89,167 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import { ref, reactive } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import type { FormInstance, FormRules } from 'element-plus';
-import { supplierApi } from '@/api/supplier';
-import type { Supplier, SupplierQueryReq } from '@/types/supplier';
+<script lang="ts" setup>
+import { ref, reactive, onMounted, computed } from 'vue'
+import { supplierApi } from '@/api/supplier'
+import type { SupplierDTO, SupplierQueryReqDTO } from '@/api/supplier'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
-const loading = ref(false);
-const dialogVisible = ref(false);
-const dialogType = ref<'add' | 'edit'>('add');
-const formRef = ref<FormInstance>();
-const tableData = ref<Supplier[]>([]);
-const total = ref(0);
+const loading = ref(false)
+const total = ref(0)
+const tableData = ref<SupplierDTO[]>([])
 
-const queryForm = reactive<SupplierQueryReq>({
-    pageNum: 1,
-    pageSize: 10,
-    supplierName: '',
-    supplierCode: '',
-    status: undefined
-});
+const queryParams = reactive<SupplierQueryReqDTO>({
+    page: 1,
+    size: 10,
+    name: '',
+    enable: undefined
+})
+
+const dialogVisible = ref(false)
+const isEdit = ref(false)
+const formRef = ref<FormInstance>()
 
 const form = reactive({
-    id: '',
-    supplierName: '',
-    supplierCode: '',
+    id: 0,
+    name: '',
+    supCode: '',
     description: '',
     contactName: '',
     contactPhone: '',
     contactEmail: '',
-    address: ''
-});
+    appKey: '',
+    appSecret: '',
+    enable: true
+})
 
 const rules: FormRules = {
-    supplierName: [
-        { required: true, message: '请输入供应商名称', trigger: 'blur' }
-    ],
-    supplierCode: [
-        { required: true, message: '请输入供应商编码', trigger: 'blur' }
-    ],
-    contactEmail: [
-        { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
-    ]
-};
+    name: [{ required: true, message: '请输入供应商名称', trigger: 'blur' }],
+    supCode: [{ required: true, message: '请输入供应商编码', trigger: 'blur' }],
+    contactEmail: [{ type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }]
+}
+
+const dialogTitle = computed(() => isEdit.value ? '编辑供应商' : '新增供应商')
 
 const loadData = async () => {
     try {
-        loading.value = true;
-        const res = await supplierApi.page(queryForm);
-        tableData.value = res.content;
-        total.value = res.totalElements;
-    } catch (error) {
-        console.error('加载数据失败:', error);
-        ElMessage.error('加载数据失败，请稍后重试');
+        loading.value = true
+        const res = await supplierApi.page(queryParams)
+        if (res.code === 200) {
+            tableData.value = res.data.records
+            total.value = res.data.total
+        }
     } finally {
-        loading.value = false;
+        loading.value = false
     }
-};
+}
 
-const handleSearch = () => {
-    queryForm.pageNum = 1;
-    loadData();
-};
+const handleQuery = () => {
+    queryParams.page = 1
+    loadData()
+}
 
-const resetQuery = () => {
-    queryForm.pageNum = 1;
-    queryForm.pageSize = 10;
-    queryForm.supplierName = '';
-    queryForm.supplierCode = '';
-    queryForm.status = undefined;
-    loadData();
-};
+const handleReset = () => {
+    queryParams.name = ''
+    queryParams.enable = undefined
+    handleQuery()
+}
 
 const handleSizeChange = (val: number) => {
-    queryForm.pageSize = val;
-    loadData();
-};
+    queryParams.size = val
+    loadData()
+}
 
 const handleCurrentChange = (val: number) => {
-    queryForm.pageNum = val;
-    loadData();
-};
-
-const resetForm = () => {
-    form.id = '';
-    form.supplierName = '';
-    form.supplierCode = '';
-    form.description = '';
-    form.contactName = '';
-    form.contactPhone = '';
-    form.contactEmail = '';
-    form.address = '';
-};
+    queryParams.page = val
+    loadData()
+}
 
 const handleAdd = () => {
-    dialogType.value = 'add';
-    resetForm();
-    dialogVisible.value = true;
-};
+    isEdit.value = false
+    resetForm()
+    dialogVisible.value = true
+}
 
-const handleEdit = (row: Supplier) => {
-    dialogType.value = 'edit';
-    Object.assign(form, row);
-    dialogVisible.value = true;
-};
+const handleEdit = (row: SupplierDTO) => {
+    isEdit.value = true
+    Object.assign(form, row)
+    dialogVisible.value = true
+}
 
-const handleStatusChange = async (row: Supplier) => {
+const handleToggleEnable = async (row: SupplierDTO) => {
     try {
         await ElMessageBox.confirm(
-            `确认要${row.status === 1 ? '禁用' : '启用'}该供应商吗？`,
+            `确定要${row.enable ? '禁用' : '启用'}该供应商吗？`,
             '提示',
             {
                 type: 'warning'
             }
-        );
-        await supplierApi.update({
-            id: row.id,
-            supplierName: row.supplierName,
-            status: row.status === 1 ? 0 : 1
-        });
-        ElMessage.success('操作成功');
-        loadData();
+        )
+
+        await supplierApi.batchEnable({
+            ids: [row.id],
+            enable: !row.enable
+        })
+
+        ElMessage.success('操作成功')
+        loadData()
     } catch (error) {
         // 用户取消操作
     }
-};
+}
+
+const resetForm = () => {
+    form.id = 0
+    form.name = ''
+    form.supCode = ''
+    form.description = ''
+    form.contactName = ''
+    form.contactPhone = ''
+    form.contactEmail = ''
+    form.appKey = ''
+    form.appSecret = ''
+    form.enable = true
+}
 
 const handleSubmit = async () => {
-    if (!formRef.value) return;
-    await formRef.value.validate();
-    
-    try {
-        if (dialogType.value === 'add') {
-            await supplierApi.create(form);
-        } else {
-            await supplierApi.update(form);
-        }
-        ElMessage.success('操作成功');
-        dialogVisible.value = false;
-        loadData();
-    } catch (error) {
-        // 错误处理
-    }
-};
+    if (!formRef.value) return
 
-loadData();
+    await formRef.value.validate(async (valid) => {
+        if (valid) {
+            try {
+                if (isEdit.value) {
+                    await supplierApi.update(form)
+                } else {
+                    await supplierApi.create(form)
+                }
+                ElMessage.success('操作成功')
+                dialogVisible.value = false
+                loadData()
+            } catch (error) {
+                console.error('操作失败:', error)
+            }
+        }
+    })
+}
+
+onMounted(() => {
+    loadData()
+})
 </script>
 
 <style lang="scss" scoped>
-.supplier-list {
-    min-height: 100%;
+.supplier-container {
     padding: 20px;
-    background-color: #f0f2f5;
 
-    .search-card {
+    .search-bar {
         margin-bottom: 20px;
-        
-        .search-form {
-            @include flex(row, flex-start, center);
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .operation-group {
-            @include flex(row, flex-start, center);
-            gap: 10px;
-        }
     }
 
-    .table-card {
-        .el-table {
-            margin-top: 20px;
-            
-            th {
-                background-color: #f5f7fa;
-                color: $text-primary;
-            }
-        }
-
-        .pagination {
-            @include flex(row, flex-end, center);
-            margin-top: 20px;
-        }
+    .pagination {
+        margin-top: 20px;
+        display: flex;
+        justify-content: flex-end;
     }
 }
-</style> 
+</style>

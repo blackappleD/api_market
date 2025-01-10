@@ -4,7 +4,8 @@ import cn.hutool.extra.spring.SpringUtil;
 import com.api.market.core.auth.CustomLogic;
 import com.api.market.core.auth.TokenInfo;
 import com.api.market.core.auth.UserEntity;
-import com.api.market.core.exception.ApiMarketException;
+import com.api.market.core.exception.LoginException;
+import com.api.market.core.permstrategy.DataPermStrategy;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.method.HandlerMethod;
@@ -20,6 +21,7 @@ public class AuthUtil {
 	private static final ThreadLocal<HttpServletRequest> requestLocal = new ThreadLocal<>();
 	private static final ThreadLocal<HttpServletResponse> responseLocal = new ThreadLocal<>();
 	private static final ThreadLocal<TokenInfo> tokenLocal = new ThreadLocal<>();
+	private static final ThreadLocal<Set<? extends DataPermStrategy>> permStrategyLocal = new ThreadLocal<>();
 
 	private volatile static CustomLogic logic;
 
@@ -40,7 +42,7 @@ public class AuthUtil {
 	public static String getLoginId() {
 		var token = getMyToken();
 		if (token == null) {
-			throw ApiMarketException.LoginException.loginInvalid();
+			throw LoginException.loginInvalid();
 		}
 		return token.getUserId();
 	}
@@ -136,5 +138,25 @@ public class AuthUtil {
 	public static void logout() {
 		getLogic().logout();
 		AuthUtil.removeToken();
+	}
+
+	/**
+	 * 读取资源的权限策略，并暂存到线程中
+	 * 这个接口只在框架里使用
+	 *
+	 * @param request
+	 * @param handler
+	 */
+	public static void loadCurrentPermStrategy(HttpServletRequest request, HandlerMethod handler) {
+		permStrategyLocal.set(getLogic().readPermStrategy(request, handler));
+	}
+
+	/**
+	 * 获取当前的权限策略
+	 *
+	 * @return
+	 */
+	public static Set<? extends DataPermStrategy> getCurrentPermStrategy() {
+		return permStrategyLocal.get();
 	}
 }

@@ -1,12 +1,14 @@
 package com.api.market.core.dto.supplier;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class SupplierUpdateReqDTO {
-	@NotBlank(message = "ID不能为空")
+	@NotNull(message = "ID不能为空")
 	private Long id;
 
 	@NotBlank(message = "供应商名称不能为空")
@@ -20,6 +22,12 @@ public class SupplierUpdateReqDTO {
 
 	@Email(message = "邮箱格式不正确")
 	private String contactEmail;
+
+	@Schema(description = "AppKey")
+	private String appKey;
+
+	@Schema(description = "AppSecret")
+	private String appSecret;
 
 	private Boolean enable;
 }

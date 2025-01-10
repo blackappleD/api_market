@@ -2,12 +2,12 @@ package com.api.market.core.service;
 
 import cn.hutool.crypto.digest.BCrypt;
 import com.api.market.core.auth.TokenInfo;
+import com.api.market.core.dto.LoginReqDTO;
+import com.api.market.core.dto.UserResDTO;
 import com.api.market.core.exception.ApiMarketException;
 import com.api.market.core.mapper.UserMapper;
 import com.api.market.core.po.UserPO;
 import com.api.market.core.repo.UserRepo;
-import com.api.market.core.dto.LoginReqDTO;
-import com.api.market.core.dto.UserResDTO;
 import com.api.market.core.util.AuthUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -69,4 +69,7 @@ public class UserService {
 		return userRepo.findAll();
 	}
 
+	public static void main(String[] args) {
+		System.out.println(BCrypt.hashpw("aChen1874"));
+	}
 }

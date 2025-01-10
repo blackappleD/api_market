@@ -1,53 +1,64 @@
-import axios from '@/utils/axios';
-import type { Supplier, SupplierCreateReq, SupplierUpdateReq, SupplierQueryReq } from '@/types/supplier';
-import type { Page } from '@/types/common';
+import request from '@/utils/request'
+import type { ApiResponse, PageDTO, PageReqDTO } from './types'
+
+export interface SupplierDTO {
+  id: number;
+  name: string;
+  supCode: string;
+  description?: string;
+  contactName?: string;
+  contactPhone?: string;
+  contactEmail?: string;
+  appKey: string;
+  appSecret: string;
+  enable: boolean;
+  createTime: string;
+}
+
+export interface SupplierCreateReqDTO {
+  name: string;
+  supCode: string;
+  description?: string;
+  contactName?: string;
+  contactPhone?: string;
+  contactEmail?: string;
+  enable?: boolean;
+}
+
+export interface SupplierUpdateReqDTO {
+  id: number;
+  name: string;
+  description?: string;
+  contactName?: string;
+  contactPhone?: string;
+  contactEmail?: string;
+  enable?: boolean;
+}
+
+export interface SupplierQueryReqDTO extends PageReqDTO {
+  name?: string;
+  supCode?: string;
+  enable?: boolean;
+}
 
 export const supplierApi = {
-    create(data: SupplierCreateReq) {
-        return axios.post<Supplier>('/supplier', data);
-    },
-    
-    update(data: SupplierUpdateReq) {
-        return axios.put<Supplier>('/supplier', data);
-    },
-    
-    page(params: SupplierQueryReq) {
-        const { pageNum, pageSize, ...rest } = params;
-        return axios.get<Page<Supplier>>('/supplier/page', { 
-            params: {
-                ...rest,
-                pageNum: pageNum - 1,
-                pageSize
-            }
-        });
-    },
+  create(data: SupplierCreateReqDTO) {
+    return request.post<ApiResponse<number>>('/supplier', data)
+  },
 
-    getById(id: number) {
-        return axios.get<Supplier>(`/supplier/${id}`);
-    },
+  update(data: SupplierUpdateReqDTO) {
+    return request.put<ApiResponse<void>>('/supplier', data)
+  },
 
-    batchEnable(ids: number[]) {
-        return axios.post('/supplier/batch-enable', ids);
-    },
+  get(id: number) {
+    return request.get<ApiResponse<SupplierDTO>>(`/supplier/${id}`)
+  },
 
-    batchDisable(ids: number[]) {
-        return axios.post('/supplier/batch-disable', ids);
-    },
+  page(data: SupplierQueryReqDTO) {
+    return request.post<ApiResponse<PageDTO<SupplierDTO>>>('/supplier/page', data)
+  },
 
-    export(params: SupplierQueryReq) {
-        return axios.get('/supplier/export', {
-            params,
-            responseType: 'blob'
-        });
-    },
-
-    import(file: File) {
-        const formData = new FormData();
-        formData.append('file', file);
-        return axios.post('/supplier/import', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
-    }
-}; 
+  batchEnable(data: { ids: number[]; enable: boolean }) {
+    return request.post<ApiResponse<void>>('/supplier/enable', data)
+  }
+} 

@@ -91,14 +91,4 @@ public class ApiMarketException extends RuntimeException {
 		}
 	}
 
-	public static class LoginException extends ApiMarketException {
-		public static LoginException loginInvalid() {
-			return new LoginException("登录失败");
-		}
-
-		private LoginException(String message) {
-			super(401, message);
-		}
-	}
-
 }

@@ -12,7 +12,7 @@ public class SupplierException extends ApiMarketException {
 		super(code, message);
 	}
 
-	private SupplierException(String message) {
+	public SupplierException(String message) {
 		super(message);
 	}
 

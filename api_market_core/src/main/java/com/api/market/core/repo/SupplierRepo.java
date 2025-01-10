@@ -25,8 +25,8 @@ public interface SupplierRepo extends JpaRepository<SupplierPO, Long>, JpaSpecif
 			final List<Predicate> predicates = CollUtil.newArrayList();
 
 			public Predicate toPredicate(Root<SupplierPO> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				if (CharSequenceUtil.isNotBlank(dto.getName())) {
-					predicates.add(cb.like(root.get(SupplierPO.Fields.name), "%" + dto.getName() + "%"));
+				if (CharSequenceUtil.isNotBlank(dto.getSearch())) {
+					predicates.add(cb.like(root.get(SupplierPO.Fields.name), "%" + dto.getSearch() + "%"));
 				}
 				if (CharSequenceUtil.isNotBlank(dto.getSupCode())) {
 					predicates.add(cb.like(root.get(SupplierPO.Fields.supCode), "%" + dto.getSupCode() + "%"));

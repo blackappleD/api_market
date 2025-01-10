@@ -25,6 +25,9 @@ public class MerchantService {
 	@Resource
 	private MerchantMapper merchantMapper;
 
+	@Resource
+	private EmailService emailService;
+
 	@Transactional(rollbackFor = Exception.class)
 	public Long create(MerchantCreateReqDTO dto) {
 		// 检查商户编码是否已存在
@@ -56,6 +59,11 @@ public class MerchantService {
 	public PageDTO<MerchantResDTO> search(MerchantQueryReqDTO dto) {
 		Page<MerchantPO> pages = merchantRepo.search(dto, PkPageable.ofDefaultSort(dto.getPage(), dto.getSize()));
 		return PageDTO.from(pages, po -> merchantMapper.toDto(po));
+	}
+
+	public void sendAkSk(Long id) {
+		MerchantPO merchant = findById(id);
+		emailService.sendAkSk(merchant.getName(), merchant.getMerCode(), merchant.getAppKey(), merchant.getAppSecret(), merchant.getContactEmail());
 	}
 
 	public MerchantPO findById(Long id) {

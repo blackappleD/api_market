@@ -11,9 +11,8 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface SupplierMapper extends BaseMapper<SupplierPO, SupplierResDTO> {
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", constant = "1")
-    SupplierPO fromCreateDTO(SupplierCreateReqDTO dto);
+	@Mapping(target = "id", ignore = true)
+	SupplierPO fromCreateDTO(SupplierCreateReqDTO dto);
 
-    void fromUpdateDTO(@MappingTarget SupplierPO po, SupplierUpdateReqDTO dto);
+	void fromUpdateDTO(@MappingTarget SupplierPO po, SupplierUpdateReqDTO dto);
 }

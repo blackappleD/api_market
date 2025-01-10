@@ -1,5 +1,6 @@
 package com.api.market.core.auth;
 
+import com.api.market.core.permstrategy.DataPermStrategy;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.Ordered;
 import org.springframework.web.method.HandlerMethod;
@@ -34,4 +35,12 @@ public interface CustomLogic extends Ordered {
 
 	boolean checkUrlPerms(Set<String> urlPerms, Set<String> userPerms);
 
+	/**
+	 * 获取数据权限
+	 *
+	 * @return
+	 */
+	default Set<? extends DataPermStrategy> readPermStrategy(HttpServletRequest request, HandlerMethod handler) {
+		return Set.of();
+	}
 }

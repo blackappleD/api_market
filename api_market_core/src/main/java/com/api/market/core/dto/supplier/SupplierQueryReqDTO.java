@@ -7,7 +7,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class SupplierQueryReqDTO extends BasePageReqDTO {
-	private String name;
 	private String supCode;
 	private Boolean enable;
 }

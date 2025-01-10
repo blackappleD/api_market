@@ -1,5 +1,6 @@
 package com.api.market.mg.controller;
 
+import com.api.market.core.annotations.PkAuthControl;
 import com.api.market.core.annotations.PkResponseBody;
 import com.api.market.core.dto.BatchEnableLongIdReqDTO;
 import com.api.market.core.dto.api.ApiCreateReqDTO;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 @PkResponseBody
+@PkAuthControl
 public class ApiController {
 
 	@Resource

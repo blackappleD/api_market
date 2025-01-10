@@ -11,13 +11,12 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface MerchantMapper extends BaseMapper<MerchantPO, MerchantResDTO> {
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "appKey", ignore = true)
-    @Mapping(target = "appSecret", ignore = true)
-    @Mapping(target = "status", constant = "1")
-    MerchantPO fromCreateDTO(MerchantCreateReqDTO dto);
+	@Mapping(target = "id", ignore = true)
+	@Mapping(target = "appKey", ignore = true)
+	@Mapping(target = "appSecret", ignore = true)
+	MerchantPO fromCreateDTO(MerchantCreateReqDTO dto);
 
-    @Mapping(target = "appKey", ignore = true)
-    @Mapping(target = "appSecret", ignore = true)
-    void fromUpdateDTO(@MappingTarget MerchantPO po, MerchantUpdateReqDTO dto);
+	@Mapping(target = "appKey", ignore = true)
+	@Mapping(target = "appSecret", ignore = true)
+	void fromUpdateDTO(@MappingTarget MerchantPO po, MerchantUpdateReqDTO dto);
 }

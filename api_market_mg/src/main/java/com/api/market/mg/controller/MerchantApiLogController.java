@@ -1,5 +1,6 @@
 package com.api.market.mg.controller;
 
+import com.api.market.core.annotations.PkAuthControl;
 import com.api.market.core.annotations.PkResponseBody;
 import com.api.market.core.dto.base.PageDTO;
 import com.api.market.core.dto.merchantlog.MerchantApiLogQueryReqDTO;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/merchant/log")
 @PkResponseBody
+@PkAuthControl
 public class MerchantApiLogController {
 
 	@Resource

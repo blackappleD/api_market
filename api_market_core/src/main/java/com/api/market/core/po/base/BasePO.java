@@ -1,8 +1,8 @@
 package com.api.market.core.po.base;
 
-import com.api.market.core.util.AdminUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +12,7 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -65,6 +66,7 @@ public abstract class BasePO<I extends Serializable> implements Serializable {
 	@Getter
 	@Setter
 	@MappedSuperclass
+	@EntityListeners({AuditingEntityListener.class})
 	@FieldNameConstants
 	public abstract static class CommonPO<I extends Serializable> extends BasePO<I>
 			implements BaseCreateIdPO, BaseUpdateIdPO, BaseCreateTimePO, BaseUpdateTimePO {
@@ -72,7 +74,7 @@ public abstract class BasePO<I extends Serializable> implements Serializable {
 		@Column(nullable = false)
 		@CreatedBy
 		@Comment("创建人主键id")
-		private String createId = AdminUtil.getCurrentUser().getId();
+		private String createId;
 
 		@Column(nullable = false)
 		@LastModifiedBy

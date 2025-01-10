@@ -1,31 +1,30 @@
 package com.api.market.mg.controller;
 
+import com.api.market.core.annotations.PkAuthControl;
 import com.api.market.core.annotations.PkResponseBody;
 import com.api.market.core.dto.BatchEnableLongIdReqDTO;
 import com.api.market.core.dto.base.PageDTO;
-import com.api.market.core.dto.supplier.SupplierCreateReqDTO;
-import com.api.market.core.dto.supplier.SupplierQueryReqDTO;
-import com.api.market.core.dto.supplier.SupplierResDTO;
-import com.api.market.core.dto.supplier.SupplierUpdateReqDTO;
+import com.api.market.core.dto.supplier.*;
+import com.api.market.core.service.SupplierApiService;
 import com.api.market.core.service.SupplierService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 @Tag(name = "供应商管理", description = "供应商相关接口")
 @RestController
 @RequestMapping("/supplier")
 @PkResponseBody
+@PkAuthControl
 public class SupplierController {
 
 	@Resource
 	private SupplierService supplierService;
+
+	@Resource
+	private SupplierApiService supplierApiService;
 
 	@Operation(summary = "创建供应商")
 	@PostMapping
@@ -57,15 +56,24 @@ public class SupplierController {
 		supplierService.batchUpdateStatus(dto);
 	}
 
-	@Operation(summary = "导出供应商数据")
-	@GetMapping("/export")
-	public void export(SupplierQueryReqDTO req, HttpServletResponse response) throws IOException {
-		supplierService.export(req, response);
+	@Operation(summary = "供应商绑定Api")
+	@PostMapping("/api/bind")
+	public Long createApiBind(@RequestBody SupplierApiCreateDTO dto) {
+		return supplierApiService.create(dto);
 	}
 
-	@Operation(summary = "导入供应商数据")
-	@PostMapping("/import")
-	public void importData(@RequestParam("file") MultipartFile file) throws IOException {
-		supplierService.importData(file);
+	@Operation(summary = "更新供应商绑定Api信息")
+	@PutMapping("/api/bind")
+	public void updateApiBind(@RequestBody SupplierApiUpdateDTO dto) {
+		supplierApiService.update(dto);
 	}
+
+	@Operation(summary = "供应商Api列表查询")
+	@GetMapping("/api/page")
+	public PageDTO<SupplierApiResDTO> searchApi(@Valid @RequestBody SupplierApiQueryReqDTO req) {
+		return supplierApiService.search(req);
+	}
+
+	
+
 }

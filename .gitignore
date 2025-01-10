@@ -3,6 +3,7 @@
 /api_market_core/build/
 /api_market_frontend/dist/
 /api_market_mg/build/
+/api_market_api/build/
 *.log
 /api_market_frontend/node_modules/
 /.idea

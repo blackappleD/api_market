@@ -13,6 +13,8 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "供应商管理", description = "供应商相关接口")
 @RestController
 @RequestMapping("/supplier")
@@ -36,6 +38,11 @@ public class SupplierController {
 	@PutMapping
 	public void update(@Valid @RequestBody SupplierUpdateReqDTO req) {
 		supplierService.update(req);
+	}
+
+	@GetMapping("/list")
+	public List<SupplierResDTO> list() {
+		return supplierService.list();
 	}
 
 	@Operation(summary = "根据ID获取供应商")
@@ -69,11 +76,10 @@ public class SupplierController {
 	}
 
 	@Operation(summary = "供应商Api列表查询")
-	@GetMapping("/api/page")
+	@PostMapping("/api/page")
 	public PageDTO<SupplierApiResDTO> searchApi(@Valid @RequestBody SupplierApiQueryReqDTO req) {
 		return supplierApiService.search(req);
 	}
 
-	
 
 }

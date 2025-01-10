@@ -60,5 +60,9 @@ export const supplierApi = {
 
   batchEnable(data: { ids: number[]; enable: boolean }) {
     return request.post<ApiResponse<void>>('/supplier/enable', data)
+  },
+
+  list() {
+    return request.get<ApiResponse<SupplierDTO[]>>('/supplier/list')
   }
 } 

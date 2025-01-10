@@ -5,12 +5,16 @@ import com.api.market.core.dto.supplier.*;
 import com.api.market.core.exception.SupplierException;
 import com.api.market.core.jpa.PkPageable;
 import com.api.market.core.mapper.SupplierApiMapper;
+import com.api.market.core.po.ApiPO;
 import com.api.market.core.po.SupplierApiPO;
+import com.api.market.core.po.SupplierPO;
 import com.api.market.core.repo.SupplierApiRepo;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -22,7 +26,22 @@ public class SupplierApiService {
 	@Resource
 	private SupplierApiMapper supplierApiMapper;
 
+	@Resource
+	private SupplierService supplierService;
+
+	@Resource
+	private ApiService apiService;
+
 	public Long create(SupplierApiCreateDTO req) {
+
+		SupplierPO supplier = supplierService.findById(req.getSupplier().getId());
+
+		ApiPO api = apiService.findById(req.getApi().getId());
+
+		Optional<SupplierApiPO> bySupplierAndApi = supplierApiRepo.findBySupplierAndApi(supplier, api);
+		if (bySupplierAndApi.isPresent()) {
+			throw SupplierException.duplicateApiBind();
+		}
 
 		SupplierApiPO po = supplierApiMapper.fromCreateDTO(req);
 		return supplierApiRepo.save(po).getId();
@@ -30,6 +49,14 @@ public class SupplierApiService {
 	}
 
 	public void update(SupplierApiUpdateDTO req) {
+
+		SupplierPO supplier = supplierService.findById(req.getSupplier().getId());
+		ApiPO api = apiService.findById(req.getApi().getId());
+		Optional<SupplierApiPO> bySupplierAndApi = supplierApiRepo.findBySupplierAndApi(supplier, api);
+		if (bySupplierAndApi.isPresent() && bySupplierAndApi.get().getId().equals(req.getSupplier().getId())) {
+			throw SupplierException.duplicateApiBind();
+		}
+
 		SupplierApiPO po = findById(req.getId());
 		supplierApiMapper.fromUpdateDTO(po, req);
 	}

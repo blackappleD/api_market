@@ -1,6 +1,7 @@
 package com.api.market.core.dto.supplier;
 
 import com.api.market.core.dto.base.LongIdNameDTO;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -13,8 +14,10 @@ public class SupplierApiResDTO {
 
 	private Boolean enable;
 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:MM:ss")
 	private LocalDateTime createTime;
 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:MM:ss")
 	private LocalDateTime updateTime;
 
 	@Schema(description = "关联供应商")

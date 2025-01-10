@@ -17,8 +17,11 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public interface SupplierApiRepo extends JpaRepository<SupplierApiPO, Long>, JpaSpecificationExecutor<SupplierApiPO> {
+
+	Optional<SupplierApiPO> findBySupplierAndApi(SupplierPO supplier, ApiPO api);
 
 	default Page<SupplierApiPO> search(SupplierApiQueryReqDTO dto, Pageable pageable) {
 		Specification<SupplierApiPO> specification = new Specification<>() {

@@ -1,64 +1,70 @@
 import request from '@/utils/request'
 import type { ApiResponse, PageDTO, PageReqDTO } from './types'
 
-// 分类ID和名称类型
-export interface LongIdNameDTO {
-    id: string;      // Long 类型对应 string
-    name: string;
-}
-
 // API响应数据类型
-export interface ApiResDTO {
-    id: string;      // Long 类型对应 string
-    apiCode: string;
-    name: string;
-    category: LongIdNameDTO;
-    description?: string;
-    enable: boolean;
-    createTime: string;
-    updateTime: string;
+export interface ApiDTO {
+    id: number
+    name: string
+    apiCode: string
+    description?: string
+    category: {
+        id: number
+        name: string
+    }
+    enable: boolean
+    createTime: string
 }
 
 // 创建API请求类型
 export interface ApiCreateReqDTO {
-    apiCode: string;      // required
-    name: string;         // required
-    category: LongIdDTO;  // required
-    description?: string;
+    name: string
+    apiCode: string
+    description?: string
+    category: {
+        id: number
+    }
 }
 
 // 更新API请求类型
 export interface ApiUpdateReqDTO {
-    id: string;          // Long 类型对应 string
-    name: string;        // required
-    category: LongIdDTO;
-    description?: string;
+    id: number
+    name: string
+    description?: string
+    category: {
+        id: number
+    }
+    enable?: boolean
 }
 
 // 查询API请求类型
 export interface ApiQueryReqDTO extends PageReqDTO {
-    categoryId?: string;  // Long 类型对应 string
-    enable?: boolean;
+    name?: string
+    categoryId?: number
+    enable?: boolean
 }
 
 export const apiApi = {
     create(data: ApiCreateReqDTO) {
-        return request.post<ApiResponse<string>>('/api', data)  // 返回值改为 string
+        return request.post<ApiResponse<number>>('/api', data)
     },
 
     update(data: ApiUpdateReqDTO) {
         return request.put<ApiResponse<void>>('/api', data)
     },
 
-    get(id: string) {  // 参数改为 string
-        return request.get<ApiResponse<ApiResDTO>>(`/api/${id}`)
+    get(id: number) {
+        return request.get<ApiResponse<ApiDTO>>(`/api/${id}`)
+    },
+
+    list() {
+        return request.get<ApiResponse<ApiDTO[]>>('/api/list')
     },
 
     page(data: ApiQueryReqDTO) {
-        return request.post<ApiResponse<PageDTO<ApiResDTO>>>('/api/page', data)
+        return request.post<ApiResponse<PageDTO<ApiDTO>>>('/api/page', data)
     },
 
-    batchEnable(data: { ids: string[]; enable: boolean }) {  // ids 改为 string[]
-        return request.post<ApiResponse<void>>('/api/enable', data)
+    batchEnable(data: { ids: number[]; enable: boolean }) {
+        return request.put<ApiResponse<void>>('/api/enable', data)
     }
 } 

@@ -13,6 +13,8 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 @PkResponseBody
@@ -35,6 +37,11 @@ public class ApiController {
 	@GetMapping("/{id}")
 	public ApiResDTO get(@PathVariable Long id) {
 		return apiService.get(id);
+	}
+
+	@GetMapping("/list")
+	public List<ApiResDTO> list() {
+		return apiService.list();
 	}
 
 	@PostMapping("/page")

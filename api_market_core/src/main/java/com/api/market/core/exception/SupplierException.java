@@ -23,4 +23,9 @@ public class SupplierException extends ApiMarketException {
 	public static SupplierException notFound() {
 		return new SupplierException("供应商不存在");
 	}
+
+	public static SupplierException duplicateApiBind() {
+
+		return new SupplierException("供应商已经绑定过该Api");
+	}
 }

@@ -14,9 +14,9 @@ const routes: RouteRecordRaw[] = [
                 component: () => import('@/views/supplier/SupplierList.vue')
             },
             {
-                path: '/supplier-product',
-                name: 'SupplierProduct',
-                component: () => import('@/views/supplier/SupplierProductList.vue')
+                path: '/supplier-api',
+                name: 'SupplierApi',
+                component: () => import('@/views/supplier/SupplierApiList.vue')
             },
             
             // API管理

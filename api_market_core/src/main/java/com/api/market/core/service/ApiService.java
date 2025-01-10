@@ -66,6 +66,10 @@ public class ApiService {
 		return apiMapper.toDto(findById(id));
 	}
 
+	public List<ApiResDTO> list() {
+		return apiRepo.findAll().stream().map(po -> apiMapper.toDto(po)).toList();
+	}
+
 	public PageDTO<ApiResDTO> search(ApiQueryReqDTO dto) {
 
 		Page<ApiPO> pages = apiRepo.search(dto.getSearch(), dto.getEnable(), PkPageable.ofDefaultSort(dto.getPage(), dto.getSize()));

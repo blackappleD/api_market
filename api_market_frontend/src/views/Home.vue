@@ -12,7 +12,7 @@
                         <span>供应商管理</span>
                     </template>
                     <el-menu-item index="/supplier">供应商信息管理</el-menu-item>
-                    <el-menu-item index="/supplier-product">供应商产品管理</el-menu-item>
+                    <el-menu-item index="/supplier-api">供应商Api管理</el-menu-item>
                 </el-sub-menu>
 
                 <!-- API管理 -->

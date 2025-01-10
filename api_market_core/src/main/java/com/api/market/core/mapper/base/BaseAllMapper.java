@@ -1,11 +1,11 @@
-package com.api.market.core.mapper;
+package com.api.market.core.mapper.base;
 
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
-public interface BaseMapper<PO, ResDTO, CreateDTO, UpdateDTO> {
+public interface BaseAllMapper<PO, ResDTO, CreateDTO, UpdateDTO> {
 
 	ResDTO toDto(PO po);
 

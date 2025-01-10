@@ -33,7 +33,7 @@ public class SupplierApiPO extends BasePO.CommonPO<Long> {
 	private ApiPO api;
 
 	@Comment("进价")
-	@Column(scale = 4)
+	@Column(precision = 32, scale = 4)
 	private BigDecimal price;
 
 	@Comment("是否启用")

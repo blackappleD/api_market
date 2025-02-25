@@ -1,4 +1,4 @@
-package com.api.market.core.api.dto;
+package com.api.market.api.dto;
 
 import com.api.market.core.enums.BillStatus;
 import lombok.Data;

@@ -80,6 +80,10 @@ public class ApiService {
 		return apiRepo.findById(id).orElseThrow(ApiException::notFound);
 	}
 
+	public ApiPO findByApiCode(String apiCode) {
+		return apiRepo.findByApiCode(apiCode).orElseThrow(ApiException::notFound);
+	}
+
 	@Transactional(rollbackFor = Exception.class)
 	public void batchUpdateStatus(BatchEnableLongIdReqDTO dto) {
 		List<ApiPO> apis = apiRepo.findAllById(dto.getIds());

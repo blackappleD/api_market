@@ -14,8 +14,10 @@ import lombok.Getter;
 public enum ApiCode {
 
 	XHS_SEARCH_NOTE_LIST("xhs_search_note_list", "小红书搜索笔记列表"),
+	TIK_TOK_SHOP_LIST("TIK_TOK_SHOP_LIST", "tiktok商城店铺产品列表"),
 
 	UN_KNOWN("", "");
+
 	private final String code;
 	private final String message;
 

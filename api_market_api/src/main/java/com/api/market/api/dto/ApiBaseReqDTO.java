@@ -1,0 +1,27 @@
+package com.api.market.api.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public abstract class ApiBaseReqDTO {
+
+	@NotBlank(message = "apiCode不能为空")
+	private String apiCode;
+
+	@NotBlank(message = "merchantCode不能为空")
+	private String merchantCode;
+
+	@NotBlank(message = "appKey不能为空")
+	private String appKey;
+
+	@NotBlank(message = "timestamp不能为空")
+	private String timestamp;
+
+	@NotBlank(message = "seqNo不能为空")
+	private String seqNo;
+
+	@NotBlank(message = "sign不能为空")
+	private String sign;
+
+}

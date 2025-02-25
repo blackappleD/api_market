@@ -1,9 +1,10 @@
 package com.api.market.api.controller;
 
-import com.api.market.core.api.dto.ApiBaseReqDTO;
-import com.api.market.core.api.dto.ApiBaseResDTO;
-import com.api.market.core.api.service.SupplierService;
+import com.api.market.api.dto.ApiBaseReqDTO;
+import com.api.market.api.dto.ApiBaseResDTO;
+import com.api.market.api.service.SupplierServiceFactory;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -17,14 +18,12 @@ import org.springframework.web.bind.annotation.*;
 public class ApiV1Controller {
 
 	@Resource
-	private SupplierService supplierService;
+	private SupplierServiceFactory supplierServiceFactory;
 
-	@PostMapping("/{apiCode}")
-	public <T> ApiBaseResDTO<T> get(@PathVariable String apiCode,
-	                                @RequestBody ApiBaseReqDTO reqDTO) {
-
-
-
+	@SuppressWarnings("rawtypes")
+	@PostMapping
+	public ApiBaseResDTO get(@RequestBody @Valid ApiBaseReqDTO reqDTO) {
+		return supplierServiceFactory.execute(reqDTO);
 	}
 
 }

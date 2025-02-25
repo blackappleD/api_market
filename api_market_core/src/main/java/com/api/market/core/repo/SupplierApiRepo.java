@@ -23,6 +23,8 @@ public interface SupplierApiRepo extends JpaRepository<SupplierApiPO, Long>, Jpa
 
 	Optional<SupplierApiPO> findBySupplierAndApi(SupplierPO supplier, ApiPO api);
 
+	List<SupplierApiPO> findAllByApi(ApiPO api);
+
 	default Page<SupplierApiPO> search(SupplierApiQueryReqDTO dto, Pageable pageable) {
 		Specification<SupplierApiPO> specification = new Specification<>() {
 			final List<Predicate> predicates = CollUtil.newArrayList();

@@ -21,6 +21,8 @@ public class MerchantApiLogPO extends BasePO.CommonPO<Long> {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	private String seqNo;
+
 	@Column(nullable = false)
 	private Long merchantId;
 

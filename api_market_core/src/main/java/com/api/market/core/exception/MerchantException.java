@@ -1,5 +1,7 @@
 package com.api.market.core.exception;
 
+import cn.hutool.core.text.CharSequenceUtil;
+
 /**
  * @author chentong
  * @version 1.0
@@ -17,18 +19,22 @@ public class MerchantException extends ApiMarketException {
 	}
 
 	public static MerchantException merCodeExist() {
-		return new MerchantException(PARAM_CODE, "商家编码已存在");
+		return new MerchantException(PARAM_CODE, "商户编码已存在");
 	}
 
 	public static MerchantException notFound() {
-		return new MerchantException("商家不存在存在");
+		return new MerchantException("商户不存在");
 	}
 
-	public static MerchantException accountNotAvailable() {
-		return new MerchantException("账户暂时不可用");
+	public static MerchantException merchantNotAvailable() {
+		return new MerchantException("商户暂时不可用");
 	}
 
-	public static MerchantException accountApiNotAvailable() {
-		return new MerchantException("账户暂时不可调用该接口");
+	public static MerchantException merchantApiNotAvailable(String merchantCode, String apiCode) {
+		return new MerchantException(CharSequenceUtil.format("商户 {} 暂时无法调用 {} 接口", merchantCode, apiCode));
+	}
+
+	public static MerchantException merchantApiRateLimit() {
+		return new MerchantException("商户");
 	}
 }

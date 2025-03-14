@@ -35,6 +35,6 @@ public class ApiSalePO extends BasePO.CommonPO<Long> {
 			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private List<SupplierPO> routerSuppliers;
 
-	private boolean enable;
+	private Boolean enable;
 
 }

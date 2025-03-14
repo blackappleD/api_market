@@ -37,6 +37,7 @@ public class TestService implements SupplierService {
 					xhsSearchNoteList(JsonUtil.fromJson(JsonUtil.toJson(params), XhsSearchNoteListReqDTO.class));
 			case TIK_TOK_SHOP_LIST ->
 					tkShopStoreProducts(JsonUtil.fromJson(JsonUtil.toJson(params), TkShopStoreProductsReqDTO.class));
+			case TEST -> test(params);
 			default -> throw ApiException.unknownApiCode();
 		};
 	}
@@ -47,6 +48,11 @@ public class TestService implements SupplierService {
 
 	public ApiBaseResDTO<TkShopStoreProductsResDTO> tkShopStoreProducts(TkShopStoreProductsReqDTO dto) {
 		return null;
+	}
+
+	public ApiBaseResDTO<String> test(ApiBaseReqDTO params) {
+
+		return ApiBaseResDTO.success("success");
 	}
 
 }

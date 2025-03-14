@@ -15,7 +15,15 @@ public class ApiException extends ApiMarketException {
 	}
 
 	public static ApiException unknownApiCode() {
-		return new ApiException("api未配置");
+		return new ApiException("API未配置");
+	}
+
+	public static ApiException rateLimit() {
+		return new ApiException("接口限流");
+	}
+
+	public static ApiException accessLimit() {
+		return new ApiException("接口调用超限");
 	}
 
 }

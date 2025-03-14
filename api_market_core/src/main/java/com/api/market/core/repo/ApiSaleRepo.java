@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import com.api.market.core.po.ApiPO;
 import com.api.market.core.po.ApiSalePO;
+import com.api.market.core.po.MerchantPO;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -16,8 +17,13 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public interface ApiSaleRepo extends JpaRepository<ApiSalePO, Long>, JpaSpecificationExecutor<ApiSalePO> {
+
+	Optional<ApiSalePO> findByMerchantAndApi(MerchantPO merchant, ApiPO api);
+
+	boolean existsByMerchantIdAndApiId(Long merchantId, Long apiId);
 
 	default Page<ApiSalePO> search(String search, Boolean enable, Pageable pageable) {
 

@@ -7,9 +7,12 @@ import com.api.market.core.dto.apisale.ApiSaleResDTO;
 import com.api.market.core.dto.apisale.ApiSaleUpdateReqDTO;
 import com.api.market.core.dto.base.PageDTO;
 import com.api.market.core.exception.ApiException;
+import com.api.market.core.exception.ApiSaleException;
 import com.api.market.core.jpa.PkPageable;
 import com.api.market.core.mapper.ApiSaleMapper;
+import com.api.market.core.po.ApiPO;
 import com.api.market.core.po.ApiSalePO;
+import com.api.market.core.po.MerchantPO;
 import com.api.market.core.repo.ApiSaleRepo;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +33,11 @@ public class ApiSaleService {
 	private ApiSaleMapper apiSaleMapper;
 
 	public Long create(ApiSaleCreateReqDTO dto) {
+
+		if (apiSaleRepo.existsByMerchantIdAndApiId(dto.getMerchant().getId(), dto.getApi().getId())) {
+			throw ApiSaleException.alreadyExist();
+		}
+
 		ApiSalePO po = apiSaleMapper.fromCreateDTO(dto);
 
 		return apiSaleRepo.save(po).getId();
@@ -39,8 +47,12 @@ public class ApiSaleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void update(ApiSaleUpdateReqDTO dto) {
 
-		// todo
 		ApiSalePO po = findById(dto.getId());
+		if (apiSaleRepo.existsByMerchantIdAndApiId(dto.getMerchant().getId(), dto.getApi().getId())
+				&& !dto.getId().equals(po.getId())) {
+			throw ApiSaleException.alreadyExist();
+		}
+
 		apiSaleMapper.fromUpdateDTO(po, dto);
 
 	}
@@ -71,6 +83,11 @@ public class ApiSaleService {
 		List<ApiSalePO> apis = apiSaleRepo.findAllById(dto.getIds());
 		apis.forEach(api -> api.setEnable(dto.getEnable()));
 		apiSaleRepo.saveAll(apis);
+	}
+
+	public ApiSalePO findBYMerchantAndApi(MerchantPO merchant, ApiPO api) {
+
+		return apiSaleRepo.findByMerchantAndApi(merchant, api).orElseThrow(ApiSaleException::notFound);
 	}
 
 

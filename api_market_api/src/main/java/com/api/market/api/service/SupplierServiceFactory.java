@@ -4,10 +4,12 @@ import cn.hutool.extra.spring.SpringUtil;
 import com.api.market.api.dto.ApiBaseReqDTO;
 import com.api.market.api.dto.ApiBaseResDTO;
 import com.api.market.core.exception.MerchantException;
+import com.api.market.core.exception.RateLimitException;
 import com.api.market.core.exception.SupplierException;
 import com.api.market.core.po.SupplierPO;
 import com.api.market.core.service.MerchantService;
 import com.api.market.core.service.SupplierApiService;
+import com.api.market.core.util.RateLimitUtil;
 import jakarta.annotation.Resource;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -54,16 +56,25 @@ public class SupplierServiceFactory implements ApplicationRunner {
 	@SuppressWarnings("rawtypes")
 	public ApiBaseResDTO execute(ApiBaseReqDTO params) {
 
-		boolean available = merchantService.isAccountAvailable(params.getMerchantCode(), params.getApiCode());
-		if (!available) {
-			throw MerchantException.accountNotAvailable();
-		}
-		boolean apiAvailable = merchantService.isApiAvailable(params.getMerchantCode(), params.getApiCode());
-		if (!apiAvailable) {
-			throw MerchantException.accountApiNotAvailable();
+		String merchantCode = params.getMerchantCode();
+		String apiCode = params.getApiCode();
+
+		boolean available = merchantService.isAccountAvailable(merchantCode, apiCode);
+
+		// todo
+		if (RateLimitUtil.isLimit()) {
+			throw RateLimitException.rateLimit();
 		}
 
-		return getService(params.getApiCode()).execute(params);
+		if (RateLimitUtil.isPerDayLimit()) {
+			throw RateLimitException.perDataLimit();
+		}
+
+		if (!available) {
+			throw MerchantException.merchantApiNotAvailable(merchantCode, apiCode);
+		}
+
+		return getService(apiCode).execute(params);
 	}
 
 

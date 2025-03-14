@@ -1,6 +1,6 @@
 package com.api.market.core.exception;
 
-public class ApiException extends RuntimeException {
+public class ApiException extends ApiMarketException {
     private ApiException(String message) {
         super(message);
     }
@@ -14,6 +14,6 @@ public class ApiException extends RuntimeException {
     }
 
     public static ApiException apiDisabled() {
-        return new ApiException("API已禁用");
+        return new ApiException("API暂时关停");
     }
 }

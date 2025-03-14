@@ -52,6 +52,10 @@ public class SupplierPO extends BasePO.CommonPO<Long> {
 	@Column(length = 1000)
 	private String appSecret;
 
+	@Comment("供应商优先级，值越大优先级越低")
+	@Column(length = 100)
+	private Integer priority = 999;
+
 	@Comment("是否启用")
 	@Column(nullable = false)
 	private Boolean enable = true;

@@ -1,7 +1,10 @@
 package com.api.market.core.dto.apisale;
 
+import com.api.market.core.dto.base.LongIdDTO;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @author chentong
@@ -15,5 +18,12 @@ public class ApiSaleUpdateReqDTO {
 	@NotNull(message = "ID不能为空")
 	private Long id;
 
-	// todo 补充其他字段
+	private LongIdDTO api;
+
+	private LongIdDTO merchant;
+
+	private List<LongIdDTO> routerSuppliers;
+
+	private Boolean enable;
+
 }

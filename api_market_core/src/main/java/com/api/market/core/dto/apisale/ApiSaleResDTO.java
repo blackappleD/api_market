@@ -1,6 +1,9 @@
 package com.api.market.core.dto.apisale;
 
+import com.api.market.core.dto.base.LongIdNameDTO;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @author chentong
@@ -10,4 +13,15 @@ import lombok.Data;
  */
 @Data
 public class ApiSaleResDTO {
+
+	private Long id;
+
+	private LongIdNameDTO api;
+
+	private LongIdNameDTO merchant;
+
+	private List<LongIdNameDTO> routerSuppliers;
+
+	private Boolean enable;
+
 }

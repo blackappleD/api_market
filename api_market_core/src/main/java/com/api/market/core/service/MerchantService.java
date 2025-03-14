@@ -6,9 +6,12 @@ import com.api.market.core.dto.merchant.MerchantCreateReqDTO;
 import com.api.market.core.dto.merchant.MerchantQueryReqDTO;
 import com.api.market.core.dto.merchant.MerchantResDTO;
 import com.api.market.core.dto.merchant.MerchantUpdateReqDTO;
+import com.api.market.core.exception.ApiException;
 import com.api.market.core.exception.MerchantException;
 import com.api.market.core.jpa.PkPageable;
 import com.api.market.core.mapper.MerchantMapper;
+import com.api.market.core.po.ApiPO;
+import com.api.market.core.po.ApiSalePO;
 import com.api.market.core.po.MerchantPO;
 import com.api.market.core.repo.MerchantRepo;
 import jakarta.annotation.Resource;
@@ -27,6 +30,12 @@ public class MerchantService {
 
 	@Resource
 	private EmailService emailService;
+
+	@Resource
+	private ApiSaleService apiSaleService;
+
+	@Resource
+	private ApiService apiService;
 
 	@Transactional(rollbackFor = Exception.class)
 	public Long create(MerchantCreateReqDTO dto) {
@@ -66,14 +75,25 @@ public class MerchantService {
 		emailService.sendAkSk(merchant.getName(), merchant.getMerCode(), merchant.getAppKey(), merchant.getAppSecret(), merchant.getContactEmail());
 	}
 
-	public boolean isAccountAvailable(String merchantCode, String apiCode) {
-		// todo 校验商户有效性
+	public MerchantPO getByMerchantCode(String merCode) {
 
-		return true;
+		return merchantRepo.findByMerCode(merCode).orElseThrow(MerchantException::notFound);
+
 	}
 
-	public boolean isApiAvailable(String merchantCode, String apiCode) {
-		// todo 校验商户是否有该api的调用权限
+	public boolean isAccountAvailable(String merchantCode, String apiCode) {
+		MerchantPO merchant = getByMerchantCode(merchantCode);
+		ApiPO api = apiService.findByApiCode(apiCode);
+		ApiSalePO apiSale = apiSaleService.findBYMerchantAndApi(merchant, api);
+		if (!merchant.getEnable()) {
+			throw MerchantException.merchantNotAvailable();
+		}
+		if (!api.getEnable()) {
+			throw ApiException.apiDisabled();
+		}
+		if (!apiSale.getEnable()) {
+			throw MerchantException.merchantApiNotAvailable(merchantCode, apiCode);
+		}
 		return true;
 	}
 

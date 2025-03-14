@@ -16,10 +16,13 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public interface MerchantRepo extends JpaRepository<MerchantPO, Long>, JpaSpecificationExecutor<MerchantPO> {
 
 	boolean existsByMerCode(String merCode);
+
+	Optional<MerchantPO> findByMerCode(String merCode);
 
 	default Page<MerchantPO> search(MerchantQueryReqDTO dto, Pageable pageable) {
 		Specification<MerchantPO> specification = new Specification<>() {

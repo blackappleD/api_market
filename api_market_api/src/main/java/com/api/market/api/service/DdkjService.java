@@ -19,8 +19,8 @@ import org.springframework.stereotype.Service;
  * @description: description
  * @date 2025/1/10 12:57
  */
-@Service("Test")
-public class TestService implements SupplierService {
+@Service("ddkj")
+public class DdkjService implements SupplierService {
 
 	@Data
 	public static class BaseResDTO<T> {

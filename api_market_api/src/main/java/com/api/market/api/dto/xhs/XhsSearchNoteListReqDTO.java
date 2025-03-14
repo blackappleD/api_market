@@ -1,8 +1,6 @@
 package com.api.market.api.dto.xhs;
 
-import com.api.market.api.dto.ApiBaseReqDTO;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * @author chentong
@@ -10,9 +8,8 @@ import lombok.EqualsAndHashCode;
  * @description: description
  * @date 2025/1/13 9:28
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class XhsSearchNoteListReqDTO extends ApiBaseReqDTO {
+public class XhsSearchNoteListReqDTO {
 
 	private String keyword;
 

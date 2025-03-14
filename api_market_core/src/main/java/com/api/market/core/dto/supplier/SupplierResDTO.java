@@ -10,6 +10,7 @@ public class SupplierResDTO {
 	private Long id;
 	private String name;
 	private String supCode;
+	private String baseUrl;
 	private String description;
 	private String contactName;
 	private String contactPhone;

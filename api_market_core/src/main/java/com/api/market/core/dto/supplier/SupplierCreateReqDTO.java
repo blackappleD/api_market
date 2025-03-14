@@ -13,6 +13,8 @@ public class SupplierCreateReqDTO {
 	@NotBlank(message = "供应商编码不能为空")
 	private String supCode;
 
+	private String baseUrl;
+
 	private String description;
 
 	private String contactName;

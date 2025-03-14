@@ -6,7 +6,6 @@ import com.api.market.core.dto.merchant.MerchantCreateReqDTO;
 import com.api.market.core.dto.merchant.MerchantQueryReqDTO;
 import com.api.market.core.dto.merchant.MerchantResDTO;
 import com.api.market.core.dto.merchant.MerchantUpdateReqDTO;
-import com.api.market.core.enums.ApiCode;
 import com.api.market.core.exception.ApiException;
 import com.api.market.core.exception.MerchantException;
 import com.api.market.core.jpa.PkPageable;
@@ -76,27 +75,13 @@ public class MerchantService {
 		emailService.sendAkSk(merchant.getName(), merchant.getMerCode(), merchant.getAppKey(), merchant.getAppSecret(), merchant.getContactEmail());
 	}
 
-	public MerchantPO getByMerchantCode(String merCode) {
+	public MerchantPO findByMerchantCode(String merCode) {
 
 		return merchantRepo.findByMerCode(merCode).orElseThrow(MerchantException::notFound);
 
 	}
 
-	public boolean isAccountAvailable(String merchantCode, ApiCode apiCode) {
-		MerchantPO merchant = getByMerchantCode(merchantCode);
-		ApiPO api = apiService.findByApiCode(apiCode);
-		ApiSalePO apiSale = apiSaleService.findBYMerchantAndApi(merchant, api);
-		if (!merchant.getEnable()) {
-			throw MerchantException.merchantNotAvailable();
-		}
-		if (!api.getEnable()) {
-			throw ApiException.apiDisabled();
-		}
-		if (!apiSale.getEnable()) {
-			throw MerchantException.merchantApiNotAvailable(merchantCode, apiCode);
-		}
-		return true;
-	}
+
 
 	public MerchantPO findById(Long id) {
 		return merchantRepo.findById(id).orElseThrow(MerchantException::notFound);

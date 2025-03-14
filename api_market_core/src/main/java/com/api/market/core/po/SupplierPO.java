@@ -28,6 +28,10 @@ public class SupplierPO extends BasePO.CommonPO<Long> {
 	@Column(nullable = false, length = 50, unique = true)
 	private String supCode;
 
+	@Comment("接口baseUrl")
+	@Column(length = 200)
+	private String baseUrl;
+
 	@Comment("备注/描述")
 	@Column(length = 1000)
 	private String description;

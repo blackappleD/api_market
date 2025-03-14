@@ -18,6 +18,7 @@ public class ApiBaseResDTO<T> {
 		response.code = 200;
 		response.data = data;
 		response.bill = BillStatus.YES;
+		response.message = "成功";
 		return response;
 	}
 

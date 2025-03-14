@@ -2,6 +2,7 @@ package com.api.market.api.service;
 
 import com.api.market.api.dto.ApiBaseReqDTO;
 import com.api.market.api.dto.ApiBaseResDTO;
+import com.api.market.core.po.SupplierApiPO;
 
 /**
  * @author chentong
@@ -12,6 +13,6 @@ import com.api.market.api.dto.ApiBaseResDTO;
 public interface SupplierService {
 
 	@SuppressWarnings("rawtypes")
-	ApiBaseResDTO execute(ApiBaseReqDTO params);
+	ApiBaseResDTO execute(SupplierApiPO supApi, ApiBaseReqDTO dto);
 
 }

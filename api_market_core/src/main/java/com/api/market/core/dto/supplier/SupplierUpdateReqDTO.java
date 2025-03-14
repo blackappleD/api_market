@@ -16,6 +16,8 @@ public class SupplierUpdateReqDTO {
 
 	private String supCode;
 
+	private String baseUrl;
+
 	private String description;
 
 	private String contactName;

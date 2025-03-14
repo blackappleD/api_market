@@ -4,10 +4,16 @@ import cn.hutool.extra.spring.SpringUtil;
 import com.api.market.api.dto.ApiBaseReqDTO;
 import com.api.market.api.dto.ApiBaseResDTO;
 import com.api.market.core.enums.ApiCode;
+import com.api.market.core.exception.ApiException;
 import com.api.market.core.exception.MerchantException;
 import com.api.market.core.exception.RateLimitException;
 import com.api.market.core.exception.SupplierException;
-import com.api.market.core.po.SupplierPO;
+import com.api.market.core.po.ApiPO;
+import com.api.market.core.po.ApiSalePO;
+import com.api.market.core.po.MerchantPO;
+import com.api.market.core.po.SupplierApiPO;
+import com.api.market.core.service.ApiSaleService;
+import com.api.market.core.service.ApiService;
 import com.api.market.core.service.MerchantService;
 import com.api.market.core.service.SupplierApiService;
 import com.api.market.core.util.RateLimitUtil;
@@ -16,8 +22,9 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -37,33 +44,41 @@ public class SupplierServiceFactory implements ApplicationRunner {
 	@Resource
 	private MerchantService merchantService;
 
-	private SupplierService getService(String merchantCode, ApiCode apiCode) {
+	@Resource
+	private ApiSaleService apiSaleService;
 
-		List<SupplierPO> suppliers = supplierApiService.findAllByApiCode(apiCode);
+	@Resource
+	private ApiService apiService;
 
-		if (suppliers.isEmpty()) {
-			throw SupplierException.notSupportBindThisApi();
-		}
+	private SupplierService getService(SupplierApiPO supplierApi) {
 
-
-		// todo 根据路由规则获取供应商，暂时取第一个
-		String supCode = suppliers.getFirst().getSupCode();
-
-
-		SupplierService service = serviceMap.get(supCode);
+		SupplierService service = serviceMap.get(supplierApi.getSupplier().getSupCode());
 		if (service == null) {
-			throw new IllegalArgumentException("Invalid API code: " + supCode);
+			throw SupplierException.supplierServiceNotSettle();
 		}
 		return service;
 	}
 
 	@SuppressWarnings("rawtypes")
-	public ApiBaseResDTO execute(ApiBaseReqDTO params) {
+	public ApiBaseResDTO execute(ApiBaseReqDTO reqDto) {
 
-		String merchantCode = params.getMerchantCode();
-		ApiCode apiCode = params.getApiCode();
+		String merchantCode = reqDto.getMerchantCode();
+		ApiCode apiCode = reqDto.getApiCode();
 
-		boolean available = merchantService.isAccountAvailable(merchantCode, apiCode);
+		MerchantPO merchant = merchantService.findByMerchantCode(merchantCode);
+		if (!merchant.getEnable()) {
+			throw MerchantException.merchantNotAvailable();
+		}
+		ApiPO api = apiService.findByApiCode(apiCode);
+
+		if (!api.getEnable()) {
+			throw ApiException.apiDisabled();
+		}
+		ApiSalePO apiSale = apiSaleService.findBYMerchantAndApi(merchant, api);
+
+		if (!apiSale.getEnable()) {
+			throw MerchantException.merchantApiNotAvailable(merchant.getMerCode(), api.getApiCode());
+		}
 
 		// todo 限流
 		if (RateLimitUtil.isLimit()) {
@@ -74,11 +89,14 @@ public class SupplierServiceFactory implements ApplicationRunner {
 			throw RateLimitException.perDataLimit();
 		}
 
-		if (!available) {
+		Optional<SupplierApiPO> first = apiSale.getRouterSupplierApis()
+				.stream()
+				.min(Comparator.comparing(SupplierApiPO::getPriority));
+		if (first.isEmpty()) {
 			throw MerchantException.merchantApiNotAvailable(merchantCode, apiCode);
 		}
 
-		return getService(merchantCode, apiCode).execute(params);
+		return getService(first.get()).execute(first.get(), reqDto);
 	}
 
 

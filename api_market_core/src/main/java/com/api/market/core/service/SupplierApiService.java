@@ -5,7 +5,6 @@ import com.api.market.core.dto.supplier.SupplierApiCreateDTO;
 import com.api.market.core.dto.supplier.SupplierApiQueryReqDTO;
 import com.api.market.core.dto.supplier.SupplierApiResDTO;
 import com.api.market.core.dto.supplier.SupplierApiUpdateDTO;
-import com.api.market.core.enums.ApiCode;
 import com.api.market.core.exception.SupplierException;
 import com.api.market.core.jpa.PkPageable;
 import com.api.market.core.mapper.SupplierApiMapper;
@@ -18,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -36,13 +34,6 @@ public class SupplierApiService {
 
 	@Resource
 	private ApiService apiService;
-
-	public List<SupplierPO> findAllByApiCode(ApiCode apiCode) {
-
-		ApiPO api = apiService.findByApiCode(apiCode);
-		return supplierApiRepo.findAllByApi(api).stream().map(SupplierApiPO::getSupplier).toList();
-
-	}
 
 	public Long create(SupplierApiCreateDTO req) {
 

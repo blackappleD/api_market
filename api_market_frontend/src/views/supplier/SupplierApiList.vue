@@ -31,6 +31,13 @@
         <el-table v-loading="loading" :data="tableData" style="margin-top: 20px">
             <el-table-column prop="supplier.name" label="供应商名称" />
             <el-table-column prop="api.name" label="API名称" />
+            <el-table-column prop="priority" label="优先级" min-width="100" align="center">
+                <template #header>
+                    <el-tooltip content="值越大优先级越低" placement="top">
+                        <span>优先级</span>
+                    </el-tooltip>
+                </template>
+            </el-table-column>
             <el-table-column prop="price" label="进价">
                 <template #default="{ row }">
                     {{ formatPrice(row.price) }}
@@ -63,19 +70,25 @@
         <!-- 绑定表单对话框 -->
         <el-dialog :title="dialogTitle" v-model="dialogVisible" width="500px">
             <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-                <el-form-item label="供应商" prop="supplier.id" v-if="!isEdit">
-                    <el-select v-model="form.supplier.id" placeholder="请选择供应商">
+                <el-form-item label="供应商" prop="supplier.id">
+                    <el-select v-model="form.supplier.id" placeholder="请选择供应商" :disabled="isEdit">
                         <el-option v-for="item in supplierOptions" :key="item.id" :label="item.name" :value="item.id" />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="API" prop="api.id" v-if="!isEdit">
+                <el-form-item label="API" prop="api.id">
                     <el-select v-model="form.api.id" placeholder="请选择API">
                         <el-option v-for="item in apiOptions" :key="item.id" :label="item.name" :value="item.id" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="进价" prop="price">
-                    <el-input-number v-model="form.price" :precision="4" :step="0.0001" :min="0" style="width: 180px"
+                    <el-input-number v-model="form.price" :precision="2" :step="0.01" :min="0" style="width: 180px"
                         placeholder="请输入进价" />
+                </el-form-item>
+                <el-form-item label="优先级" prop="priority">
+                    <el-tooltip content="值越大优先级越低" placement="top">
+                        <el-input-number v-model="form.priority" :precision="0" :step="1" :min="0" style="width: 180px"
+                            placeholder="请输入优先级" />
+                    </el-tooltip>
                 </el-form-item>
                 <el-form-item label="状态" v-if="isEdit">
                     <el-switch v-model="form.enable" />
@@ -114,6 +127,7 @@ const form = reactive<SupplierApiCreateDTO | SupplierApiUpdateDTO>({
     supplier: { id: undefined },
     api: { id: undefined },
     price: 0,
+    priority: 999,
     enable: true
 })
 
@@ -128,7 +142,8 @@ const queryParams = reactive<SupplierApiQueryReqDTO>({
 const rules = {
     'supplier.id': [{ required: true, message: '请选择供应商', trigger: 'change' }],
     'api.id': [{ required: true, message: '请选择API', trigger: 'change' }],
-    price: [{ required: true, message: '请输入进价', trigger: 'blur' }]
+    price: [{ required: true, message: '请输入进价', trigger: 'blur' }],
+    priority: [{ required: true, message: '请输入优先级', trigger: 'blur' }]
 }
 
 const dialogTitle = computed(() => isEdit.value ? '编辑绑定' : '新增绑定')
@@ -221,19 +236,21 @@ const handleAdd = () => {
 
 const handleEdit = (row: SupplierApiResDTO) => {
     isEdit.value = true
-    form.supplier = { id: row.supplier.id }
-    form.api = { id: row.api.id }
-    form.price = row.price
-    form.enable = row.enable
-    if ('id' in form) {
-        (form as SupplierApiUpdateDTO).id = row.id
-    }
+    Object.assign(form, {
+        id: row.id,
+        supplier: { id: row.supplier.id },
+        api: { id: row.api.id },
+        price: row.price,
+        priority: row.priority,
+        enable: row.enable
+    })
     dialogVisible.value = true
 }
 
 const resetForm = () => {
     if (isEdit.value) {
         form.price = 0
+        form.priority = 999
         form.enable = true
         if ('id' in form) {
             delete (form as any).id
@@ -242,6 +259,7 @@ const resetForm = () => {
         form.supplier = { id: undefined }
         form.api = { id: undefined }
         form.price = 0
+        form.priority = 999
         form.enable = true
     }
 }
@@ -253,7 +271,15 @@ const handleSubmit = async () => {
         if (valid) {
             try {
                 if (isEdit.value) {
-                    await supplierApiApi.update(form as SupplierApiUpdateDTO)
+                    const updateDto: SupplierApiUpdateDTO = {
+                        id: (form as SupplierApiUpdateDTO).id,
+                        supplier: { id: form.supplier.id },
+                        api: { id: form.api.id },
+                        price: form.price,
+                        priority: form.priority,
+                        enable: form.enable
+                    }
+                    await supplierApiApi.update(updateDto)
                 } else {
                     await supplierApiApi.create(form as SupplierApiCreateDTO)
                 }
@@ -268,9 +294,11 @@ const handleSubmit = async () => {
 }
 
 // 添加价格格式化函数
-const formatPrice = (price: number) => {
-    // 使用 String() 直接转换，保持原始精度
-    return String(price)
+const formatPrice = (price: number | undefined) => {
+    if (price === undefined || price === null) {
+        return '0.00'
+    }
+    return Number(price).toFixed(2)
 }
 
 onMounted(() => {

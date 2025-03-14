@@ -28,6 +28,9 @@ public class SupplierApiUpdateDTO {
 	@Schema(description = "进价")
 	private BigDecimal price;
 
+	@Schema(description = "Api优先级")
+	private Integer priority = 999;
+
 	@Schema(description = "是否启用")
 	private boolean enable = true;
 

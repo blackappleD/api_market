@@ -5,6 +5,7 @@ import com.api.market.core.dto.supplier.SupplierApiCreateDTO;
 import com.api.market.core.dto.supplier.SupplierApiQueryReqDTO;
 import com.api.market.core.dto.supplier.SupplierApiResDTO;
 import com.api.market.core.dto.supplier.SupplierApiUpdateDTO;
+import com.api.market.core.enums.ApiCode;
 import com.api.market.core.exception.SupplierException;
 import com.api.market.core.jpa.PkPageable;
 import com.api.market.core.mapper.SupplierApiMapper;
@@ -36,7 +37,7 @@ public class SupplierApiService {
 	@Resource
 	private ApiService apiService;
 
-	public List<SupplierPO> findAllByApiCode(String apiCode) {
+	public List<SupplierPO> findAllByApiCode(ApiCode apiCode) {
 
 		ApiPO api = apiService.findByApiCode(apiCode);
 		return supplierApiRepo.findAllByApi(api).stream().map(SupplierApiPO::getSupplier).toList();
@@ -70,6 +71,7 @@ public class SupplierApiService {
 
 		SupplierApiPO po = findById(req.getId());
 		supplierApiMapper.fromUpdateDTO(po, req);
+		supplierApiRepo.save(po);
 	}
 
 	public PageDTO<SupplierApiResDTO> search(SupplierApiQueryReqDTO req) {

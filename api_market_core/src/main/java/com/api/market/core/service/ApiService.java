@@ -6,6 +6,7 @@ import com.api.market.core.dto.api.ApiQueryReqDTO;
 import com.api.market.core.dto.api.ApiResDTO;
 import com.api.market.core.dto.api.ApiUpdateReqDTO;
 import com.api.market.core.dto.base.PageDTO;
+import com.api.market.core.enums.ApiCode;
 import com.api.market.core.exception.ApiCategoryException;
 import com.api.market.core.exception.ApiException;
 import com.api.market.core.jpa.PkPageable;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -52,6 +54,9 @@ public class ApiService {
 	@Transactional(rollbackFor = Exception.class)
 	public void update(ApiUpdateReqDTO dto) {
 		ApiPO api = findById(dto.getId());
+		if (existsByApiCode(dto.getApiCode()) && !Objects.equals(api.getId(), dto.getId())) {
+			throw ApiException.apiCodeExist();
+		}
 		// 如果更新了分类，检查分类是否存在
 		if (dto.getCategory().getId() != null) {
 			if (!apiCategoryService.existsById(dto.getCategory().getId())) {
@@ -66,13 +71,17 @@ public class ApiService {
 		return apiMapper.toDto(findById(id));
 	}
 
+	public boolean existsByApiCode(ApiCode apiCode) {
+		return apiRepo.existsByApiCode(apiCode);
+	}
+
 	public List<ApiResDTO> list() {
 		return apiRepo.findAll().stream().map(po -> apiMapper.toDto(po)).toList();
 	}
 
 	public PageDTO<ApiResDTO> search(ApiQueryReqDTO dto) {
 
-		Page<ApiPO> pages = apiRepo.search(dto.getSearch(), dto.getEnable(), PkPageable.ofDefaultSort(dto.getPage(), dto.getSize()));
+		Page<ApiPO> pages = apiRepo.search(dto.getSearch(), dto.getApiCode(), dto.getEnable(), PkPageable.ofDefaultSort(dto.getPage(), dto.getSize()));
 		return PageDTO.from(pages, po -> apiMapper.toDto(po));
 	}
 
@@ -80,7 +89,7 @@ public class ApiService {
 		return apiRepo.findById(id).orElseThrow(ApiException::notFound);
 	}
 
-	public ApiPO findByApiCode(String apiCode) {
+	public ApiPO findByApiCode(ApiCode apiCode) {
 		return apiRepo.findByApiCode(apiCode).orElseThrow(ApiException::notFound);
 	}
 

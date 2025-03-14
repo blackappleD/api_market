@@ -8,6 +8,11 @@
                         <el-option v-for="item in categoryOptions" :key="item.id" :label="item.name" :value="item.id" />
                     </el-select>
                 </el-form-item>
+                <el-form-item label="API编码">
+                    <el-select v-model="queryParams.apiCode" placeholder="请选择API编码" clearable style="width: 200px">
+                        <el-option v-for="item in apiCodeOptions" :key="item.id" :label="item.id" :value="item.id" />
+                    </el-select>
+                </el-form-item>
                 <el-form-item label="状态">
                     <el-select v-model="queryParams.enable" placeholder="请选择状态" clearable style="width: 120px">
                         <el-option label="启用" :value="true" />
@@ -25,7 +30,11 @@
 
         <el-table v-loading="loading" :data="tableData" style="margin-top: 20px">
             <el-table-column prop="name" label="API名称" />
-            <el-table-column prop="apiCode" label="API编码" />
+            <el-table-column prop="apiCode" label="API编码">
+                <template #default="{ row }">
+                    {{ row.apiCode }}
+                </template>
+            </el-table-column>
             <el-table-column prop="category.name" label="所属分类" />
             <el-table-column prop="description" label="描述" show-overflow-tooltip />
             <el-table-column prop="enable" label="状态" width="100">
@@ -58,8 +67,10 @@
                 <el-form-item label="API名称" prop="name">
                     <el-input v-model="form.name" placeholder="请输入API名称" />
                 </el-form-item>
-                <el-form-item label="API编码" prop="apiCode" v-if="!isEdit">
-                    <el-input v-model="form.apiCode" placeholder="请输入API编码" />
+                <el-form-item label="API编码" prop="apiCode">
+                    <el-select v-model="form.apiCode" placeholder="请选择API编码">
+                        <el-option v-for="item in apiCodeOptions" :key="item.id" :label="item.id" :value="item.id" />
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="所属分类" prop="category.id">
                     <el-select v-model="selectedCategory" placeholder="请选择分类" @change="handleCategoryChange">
@@ -86,6 +97,8 @@ import type { ApiResDTO, ApiCreateReqDTO, ApiUpdateReqDTO, ApiQueryReqDTO } from
 import type { ApiCategoryDTO } from '@/api/apiCategory'
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { loadAllEnums, getEnumOptions, getEnumMessage } from '@/api/enum'
+import type { EnumField } from '@/api/enum'
 
 const loading = ref(false)
 const total = ref(0)
@@ -109,6 +122,7 @@ const queryParams = reactive<ApiQueryReqDTO>({
     size: 10,
     name: '',
     categoryId: undefined,
+    apiCode: undefined,
     enable: undefined
 })
 
@@ -148,6 +162,24 @@ const loadCategories = async () => {
     }
 }
 
+const apiCodeOptions = ref<EnumField[]>([])
+
+// 加载枚举数据
+const loadEnumData = async () => {
+    try {
+        await loadAllEnums()
+        const options = getEnumOptions('ApiCode')
+        if (options.length === 0) {
+            ElMessage.error('加载API编码选项失败')
+            return
+        }
+        apiCodeOptions.value = options
+    } catch (error) {
+        console.error('加载枚举数据失败:', error)
+        ElMessage.error('加载枚举数据失败')
+    }
+}
+
 // 加载API列表
 const loadData = async () => {
     try {
@@ -169,6 +201,7 @@ const handleQuery = () => {
 
 const handleReset = () => {
     queryParams.categoryId = undefined
+    queryParams.apiCode = undefined
     queryParams.enable = undefined
     handleQuery()
 }
@@ -197,14 +230,23 @@ const resetForm = () => {
 const handleAdd = () => {
     isEdit.value = false
     resetForm()
+    // 确保枚举数据已加载
+    if (apiCodeOptions.value.length === 0) {
+        loadEnumData()
+    }
     dialogVisible.value = true
 }
 
 const handleEdit = (row: ApiResDTO) => {
     isEdit.value = true
+    // 确保枚举数据已加载
+    if (apiCodeOptions.value.length === 0) {
+        loadEnumData()
+    }
     Object.assign(form, {
         id: row.id,
         name: row.name,
+        apiCode: row.apiCode,
         category: {
             id: row.category.id
         },
@@ -263,6 +305,7 @@ const handleToggleStatus = async (row: ApiResDTO) => {
 }
 
 onMounted(() => {
+    loadEnumData()
     loadCategories()
     loadData()
 })

@@ -14,6 +14,8 @@ public class SupplierUpdateReqDTO {
 	@NotBlank(message = "供应商名称不能为空")
 	private String name;
 
+	private String supCode;
+
 	private String description;
 
 	private String contactName;

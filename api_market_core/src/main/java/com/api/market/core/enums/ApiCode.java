@@ -1,7 +1,11 @@
 package com.api.market.core.enums;
 
+import com.api.market.core.dto.base.StrIdNameDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author chentong
@@ -17,18 +21,21 @@ public enum ApiCode {
 	TIK_TOK_SHOP_LIST("TIK_TOK_SHOP_LIST", "tiktok商城店铺产品列表"),
 
 	TEST("TEST", "测试接口"),
-	UN_KNOWN("", "");
+	UN_KNOWN("UN_KNOWN", "未知");
 
 	private final String code;
 	private final String message;
 
-	public static ApiCode getByCode(String code) {
+	public static List<StrIdNameDTO> allFields() {
+
+		List<StrIdNameDTO> list = new ArrayList<>();
 		for (ApiCode apiCode : ApiCode.values()) {
-			if (apiCode.getCode().equals(code)) {
-				return apiCode;
-			}
+			StrIdNameDTO dto = new StrIdNameDTO();
+			dto.setId(apiCode.getCode());
+			dto.setName(apiCode.getMessage());
+			list.add(dto);
 		}
-		return UN_KNOWN;
+		return list;
 	}
 
 }

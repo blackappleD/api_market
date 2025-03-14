@@ -1,5 +1,6 @@
 package com.api.market.core.po;
 
+import com.api.market.core.enums.ApiCode;
 import com.api.market.core.po.base.BasePO;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -19,7 +20,8 @@ public class ApiPO extends BasePO.CommonPO<Long> {
 	private Long id;
 
 	@Column(nullable = false, length = 50, unique = true)
-	private String apiCode;
+	@Enumerated(EnumType.STRING)
+	private ApiCode apiCode;
 
 	@Column(nullable = false, length = 100)
 	private String name;

@@ -6,6 +6,7 @@ import com.api.market.core.dto.merchant.MerchantCreateReqDTO;
 import com.api.market.core.dto.merchant.MerchantQueryReqDTO;
 import com.api.market.core.dto.merchant.MerchantResDTO;
 import com.api.market.core.dto.merchant.MerchantUpdateReqDTO;
+import com.api.market.core.enums.ApiCode;
 import com.api.market.core.exception.ApiException;
 import com.api.market.core.exception.MerchantException;
 import com.api.market.core.jpa.PkPageable;
@@ -81,7 +82,7 @@ public class MerchantService {
 
 	}
 
-	public boolean isAccountAvailable(String merchantCode, String apiCode) {
+	public boolean isAccountAvailable(String merchantCode, ApiCode apiCode) {
 		MerchantPO merchant = getByMerchantCode(merchantCode);
 		ApiPO api = apiService.findByApiCode(apiCode);
 		ApiSalePO apiSale = apiSaleService.findBYMerchantAndApi(merchant, api);

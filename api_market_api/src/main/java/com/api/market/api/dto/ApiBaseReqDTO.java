@@ -1,5 +1,6 @@
 package com.api.market.api.dto;
 
+import com.api.market.core.enums.ApiCode;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -7,7 +8,7 @@ import lombok.Data;
 public abstract class ApiBaseReqDTO {
 
 	@NotBlank(message = "apiCode不能为空")
-	private String apiCode;
+	private ApiCode apiCode;
 
 	@NotBlank(message = "merchantCode不能为空")
 	private String merchantCode;

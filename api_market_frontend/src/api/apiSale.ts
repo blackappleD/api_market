@@ -1,21 +1,16 @@
 import request from '@/utils/request'
 import type { ApiResponse, PageDTO, PageReqDTO } from './types'
-import type { LongIdDTO } from './supplierApi'
+import type { LongIdDTO, LongIdNameDTO } from './base'
 
 // API销售响应数据类型
 export interface ApiSaleResDTO {
     id: number
-    api: {
-        id: number
-        name: string
-    }
-    merchant: {
-        id: number
-        name: string
-    }
-    price: number
-    description: string
+    api: LongIdNameDTO
+    merchant: LongIdNameDTO
+    routerSuppliers: LongIdNameDTO[]
     enable: boolean
+    price: number
+    description?: string
     createTime: string
 }
 
@@ -23,17 +18,20 @@ export interface ApiSaleResDTO {
 export interface ApiSaleCreateDTO {
     api: LongIdDTO
     merchant: LongIdDTO
+    routerSuppliers: LongIdDTO[]
     price: number
-    description: string
-    enable?: boolean
+    description?: string
+    enable: boolean
 }
 
 // 更新API销售请求类型
 export interface ApiSaleUpdateDTO {
     id: number
-    price?: number
-    description?: string
-    enable?: boolean
+    api: LongIdDTO
+    merchant: LongIdDTO
+    routerSuppliers: LongIdDTO[]
+    price: number
+    enable: boolean
 }
 
 // 查询API销售请求类型
@@ -43,6 +41,7 @@ export interface ApiSaleQueryReqDTO extends PageReqDTO {
     enable?: boolean
 }
 
+// API销售接口
 export const apiSaleApi = {
     create(data: ApiSaleCreateDTO) {
         return request.post<ApiResponse<number>>('/api/sale', data)

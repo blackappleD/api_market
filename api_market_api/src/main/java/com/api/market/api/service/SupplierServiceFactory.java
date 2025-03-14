@@ -3,6 +3,7 @@ package com.api.market.api.service;
 import cn.hutool.extra.spring.SpringUtil;
 import com.api.market.api.dto.ApiBaseReqDTO;
 import com.api.market.api.dto.ApiBaseResDTO;
+import com.api.market.core.enums.ApiCode;
 import com.api.market.core.exception.MerchantException;
 import com.api.market.core.exception.RateLimitException;
 import com.api.market.core.exception.SupplierException;
@@ -36,7 +37,7 @@ public class SupplierServiceFactory implements ApplicationRunner {
 	@Resource
 	private MerchantService merchantService;
 
-	private SupplierService getService(String apiCode) {
+	private SupplierService getService(String merchantCode, ApiCode apiCode) {
 
 		List<SupplierPO> suppliers = supplierApiService.findAllByApiCode(apiCode);
 
@@ -44,8 +45,11 @@ public class SupplierServiceFactory implements ApplicationRunner {
 			throw SupplierException.notSupportBindThisApi();
 		}
 
+
 		// todo 根据路由规则获取供应商，暂时取第一个
 		String supCode = suppliers.getFirst().getSupCode();
+
+
 		SupplierService service = serviceMap.get(supCode);
 		if (service == null) {
 			throw new IllegalArgumentException("Invalid API code: " + supCode);
@@ -57,11 +61,11 @@ public class SupplierServiceFactory implements ApplicationRunner {
 	public ApiBaseResDTO execute(ApiBaseReqDTO params) {
 
 		String merchantCode = params.getMerchantCode();
-		String apiCode = params.getApiCode();
+		ApiCode apiCode = params.getApiCode();
 
 		boolean available = merchantService.isAccountAvailable(merchantCode, apiCode);
 
-		// todo
+		// todo 限流
 		if (RateLimitUtil.isLimit()) {
 			throw RateLimitException.rateLimit();
 		}
@@ -74,7 +78,7 @@ public class SupplierServiceFactory implements ApplicationRunner {
 			throw MerchantException.merchantApiNotAvailable(merchantCode, apiCode);
 		}
 
-		return getService(apiCode).execute(params);
+		return getService(merchantCode, apiCode).execute(params);
 	}
 
 

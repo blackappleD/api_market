@@ -46,9 +46,16 @@ public class SupplierService {
 	@Transactional(rollbackFor = Exception.class)
 	public void update(SupplierUpdateReqDTO dto) {
 		SupplierPO supplier = findById(dto.getId());
+		if (existsBySupCode(dto.getSupCode()) && !supplier.getId().equals(dto.getId())) {
+			throw SupplierException.supplierCodeExist();
+		}
 
 		supplierMapper.fromUpdateDTO(supplier, dto);
 		supplierRepo.save(supplier);
+	}
+
+	public boolean existsBySupCode(String supCode) {
+		return supplierRepo.existsBySupCode(supCode);
 	}
 
 	public List<SupplierResDTO> list() {

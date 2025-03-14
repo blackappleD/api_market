@@ -7,7 +7,6 @@ import com.api.market.api.dto.tkshop.TkShopStoreProductsResDTO;
 import com.api.market.api.dto.xhs.XhsSearchNoteListReqDTO;
 import com.api.market.api.dto.xhs.XhsSearchNoteListResDTO;
 import com.api.market.api.exception.ApiException;
-import com.api.market.core.enums.ApiCode;
 import com.api.market.core.util.JsonUtil;
 import lombok.Data;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,7 @@ public class TestService implements SupplierService {
 	@Override
 	public ApiBaseResDTO execute(ApiBaseReqDTO params) {
 
-		return switch (ApiCode.getByCode(params.getApiCode())) {
+		return switch (params.getApiCode()) {
 			case XHS_SEARCH_NOTE_LIST ->
 					xhsSearchNoteList(JsonUtil.fromJson(JsonUtil.toJson(params), XhsSearchNoteListReqDTO.class));
 			case TIK_TOK_SHOP_LIST ->

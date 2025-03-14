@@ -18,7 +18,7 @@ public class ApiSaleCreateReqDTO {
 
 	private LongIdDTO merchant;
 
-	private List<LongIdDTO> routerSuppliers;
+	private List<LongIdDTO> routerSupplierApis;
 
 	private Boolean enable;
 }

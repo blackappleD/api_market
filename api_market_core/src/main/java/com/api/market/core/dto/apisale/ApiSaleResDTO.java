@@ -3,6 +3,7 @@ package com.api.market.core.dto.apisale;
 import com.api.market.core.dto.base.LongIdNameDTO;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -18,9 +19,11 @@ public class ApiSaleResDTO {
 
 	private LongIdNameDTO api;
 
+	private BigDecimal price;
+
 	private LongIdNameDTO merchant;
 
-	private List<LongIdNameDTO> routerSuppliers;
+	private List<LongIdNameDTO> routerSupplierApis;
 
 	private Boolean enable;
 

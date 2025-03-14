@@ -23,6 +23,8 @@ public class SupplierApiResDTO {
 	@Schema(description = "关联供应商")
 	private LongIdNameDTO supplier;
 
+	private Integer priority;
+
 	@Schema(description = "关联api")
 	private LongIdNameDTO api;
 

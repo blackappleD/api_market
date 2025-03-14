@@ -2,7 +2,7 @@
     <div class="supplier-container">
         <div class="search-bar">
             <el-form :inline="true" :model="queryParams">
-                <el-form-item>
+                <el-form-item label="供应商名称">
                     <el-input v-model="queryParams.name" placeholder="供应商名称" clearable @keyup.enter="handleQuery" />
                 </el-form-item>
                 <el-form-item label="状态">
@@ -59,7 +59,7 @@
                 <el-form-item label="供应商名称" prop="name">
                     <el-input v-model="form.name" placeholder="请输入供应商名称" />
                 </el-form-item>
-                <el-form-item label="供应商编码" prop="supCode" v-if="!isEdit">
+                <el-form-item label="供应商编码" prop="supCode">
                     <el-input v-model="form.supCode" placeholder="请输入供应商编码" />
                 </el-form-item>
                 <el-form-item label="描述">
@@ -173,7 +173,14 @@ const handleAdd = () => {
 
 const handleEdit = (row: SupplierDTO) => {
     isEdit.value = true
-    Object.assign(form, row)
+    form.id = row.id
+    form.name = row.name
+    form.supCode = row.supCode
+    form.description = row.description || ''
+    form.contactName = row.contactName || ''
+    form.contactPhone = row.contactPhone || ''
+    form.contactEmail = row.contactEmail || ''
+    form.enable = row.enable
     dialogVisible.value = true
 }
 

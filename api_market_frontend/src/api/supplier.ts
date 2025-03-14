@@ -28,6 +28,7 @@ export interface SupplierCreateReqDTO {
 export interface SupplierUpdateReqDTO {
   id: number;
   name: string;
+  supCode: string;
   description?: string;
   contactName?: string;
   contactPhone?: string;

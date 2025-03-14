@@ -24,6 +24,9 @@ public class SupplierApiCreateDTO {
 	@Schema(description = "进价")
 	private BigDecimal price;
 
+	@Schema(description = "api优先级，值越大优先级越低")
+	private Integer priority = 999;
+
 	@Schema(description = "是否启用")
 	private boolean enable = true;
 

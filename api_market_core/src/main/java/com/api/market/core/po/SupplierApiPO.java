@@ -33,10 +33,18 @@ public class SupplierApiPO extends BasePO.CommonPO<Long> {
 	private ApiPO api;
 
 	@Comment("进价")
-	@Column(precision = 32, scale = 4)
+	@Column(precision = 32, scale = 2)
 	private BigDecimal price;
+
+	@Comment("api调用优先级，值越大优先级越低")
+	@Column(length = 10)
+	private Integer priority = 999;
 
 	@Comment("是否启用")
 	private boolean enable = true;
+
+	public String getName() {
+		return this.supplier.getName();
+	}
 
 }

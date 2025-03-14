@@ -1,6 +1,7 @@
 package com.api.market.core.exception;
 
 import cn.hutool.core.text.CharSequenceUtil;
+import com.api.market.core.enums.ApiCode;
 
 /**
  * @author chentong
@@ -30,8 +31,8 @@ public class MerchantException extends ApiMarketException {
 		return new MerchantException("商户暂时不可用");
 	}
 
-	public static MerchantException merchantApiNotAvailable(String merchantCode, String apiCode) {
-		return new MerchantException(CharSequenceUtil.format("商户 {} 暂时无法调用 {} 接口", merchantCode, apiCode));
+	public static MerchantException merchantApiNotAvailable(String merchantCode, ApiCode apiCode) {
+		return new MerchantException(CharSequenceUtil.format("商户 {} 暂时无法调用 {} 接口", merchantCode, apiCode.getMessage()));
 	}
 
 	public static MerchantException merchantApiRateLimit() {

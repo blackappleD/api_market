@@ -4,6 +4,7 @@ import com.api.market.core.dto.base.LongIdDTO;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -20,9 +21,11 @@ public class ApiSaleUpdateReqDTO {
 
 	private LongIdDTO api;
 
+	private BigDecimal price;
+
 	private LongIdDTO merchant;
 
-	private List<LongIdDTO> routerSuppliers;
+	private List<LongIdDTO> routerSupplierApis;
 
 	private Boolean enable;
 

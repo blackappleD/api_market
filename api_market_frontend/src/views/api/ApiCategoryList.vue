@@ -3,7 +3,7 @@
         <!-- 搜索区域 -->
         <div class="search-bar">
             <el-form :inline="true" :model="queryParams">
-                <el-form-item>
+                <el-form-item label="分类名称">
                     <el-input v-model="queryParams.name" placeholder="分类名称" clearable @keyup.enter="handleQuery" />
                 </el-form-item>
                 <el-form-item>

@@ -14,6 +14,8 @@ public class SupplierApiResDTO {
 
 	private Boolean enable;
 
+	private String name;
+
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:MM:ss")
 	private LocalDateTime createTime;
 

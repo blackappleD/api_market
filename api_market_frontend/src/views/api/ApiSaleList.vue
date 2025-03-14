@@ -70,24 +70,34 @@
         <!-- 销售表单对话框 -->
         <el-dialog :title="dialogTitle" v-model="dialogVisible" width="500px">
             <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" :disabled="dialogType === 'view'">
-                <el-form-item label="商户" prop="merchant.id" v-if="dialogType === 'add'">
-                    <el-select v-model="form.merchant.id" placeholder="请选择商户">
-                        <el-option v-for="item in merchantOptions" :key="item.id" :label="item.name" :value="item.id" />
+                <el-form-item label="商户" prop="merchant.id">
+                    <el-select v-if="dialogType === 'add'" v-model="form.merchant.id" placeholder="请选择商户" filterable>
+                        <el-option v-for="item in merchantOptions" :key="item.id" :label="item.name" :value="item.id">
+                            <span>{{ item.name }}</span>
+                        </el-option>
                     </el-select>
+                    <el-input v-else v-model="form.merchant.name" disabled />
                 </el-form-item>
-                <el-form-item label="API" prop="api.id" v-if="dialogType === 'add'">
-                    <el-select v-model="form.api.id" placeholder="请选择API">
-                        <el-option v-for="item in apiOptions" :key="item.id" :label="item.name" :value="item.id" />
+                <el-form-item label="API" prop="api.id">
+                    <el-select v-if="dialogType === 'add'" v-model="form.api.id" placeholder="请选择API"
+                        @change="handleApiChange" filterable>
+                        <el-option v-for="item in apiOptions" :key="item.id" :label="item.name" :value="item.id">
+                            <span>{{ item.name }}</span>
+                        </el-option>
                     </el-select>
+                    <el-input v-else v-model="form.api.name" disabled />
                 </el-form-item>
                 <el-form-item label="销售价格" prop="price">
                     <el-input-number v-model="form.price" :precision="2" :step="0.01" :min="0" style="width: 180px"
                         placeholder="请输入销售价格" />
                 </el-form-item>
-                <el-form-item label="描述" prop="description">
-                    <el-input v-model="form.description" type="textarea" placeholder="请输入描述" />
+                <el-form-item label="供应商路由" prop="routerSupplierApis">
+                    <el-select v-model="form.routerSupplierApis" multiple placeholder="请选择供应商路由API" style="width: 100%">
+                        <el-option v-for="item in supplierApiOptions" :key="item.id" :label="item.name"
+                            :value="{ id: item.id, name: item.name }" />
+                    </el-select>
                 </el-form-item>
-                <el-form-item label="状态" v-if="dialogType === 'edit'">
+                <el-form-item label="状态">
                     <el-switch v-model="form.enable" />
                 </el-form-item>
             </el-form>
@@ -104,9 +114,11 @@ import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue'
 import { apiSaleApi } from '@/api/apiSale'
 import { apiApi } from '@/api/api'
 import { merchantApi } from '@/api/merchant'
+import { supplierApiApi } from '@/api/supplierApi'
 import type { ApiSaleResDTO, ApiSaleCreateDTO, ApiSaleUpdateDTO, ApiSaleQueryReqDTO } from '@/api/apiSale'
 import type { ApiDTO } from '@/api/api'
 import type { MerchantDTO } from '@/api/merchant'
+import type { SupplierApiDTO } from '@/api/supplierApi'
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getEnumMessage } from '@/api/enum'
@@ -119,6 +131,7 @@ const dialogType = ref<'add' | 'edit' | 'view'>('add')
 
 const apiOptions = ref<ApiDTO[]>([])
 const merchantOptions = ref<MerchantDTO[]>([])
+const supplierApiOptions = ref<SupplierApiDTO[]>([])
 
 // 添加取消控制器
 const abortController = ref<AbortController | null>(null)
@@ -133,15 +146,15 @@ onBeforeUnmount(() => {
     tableData.value = []
     apiOptions.value = []
     merchantOptions.value = []
+    supplierApiOptions.value = []
 })
 
 const formRef = ref<FormInstance>()
 const form = reactive<ApiSaleCreateDTO | ApiSaleUpdateDTO>({
-    api: { id: undefined },
-    merchant: { id: undefined },
+    api: { id: undefined, name: '' },
+    merchant: { id: undefined, name: '' },
     routerSupplierApis: [],
     price: 0,
-    description: '',
     enable: true
 })
 
@@ -156,7 +169,8 @@ const queryParams = reactive<ApiSaleQueryReqDTO>({
 const rules = {
     'merchant.id': [{ required: true, message: '请选择商户', trigger: 'change' }],
     'api.id': [{ required: true, message: '请选择API', trigger: 'change' }],
-    price: [{ required: true, message: '请输入销售价格', trigger: 'blur' }]
+    price: [{ required: true, message: '请输入销售价格', trigger: 'blur' }],
+    routerSupplierApis: [{ required: true, message: '请选择供应商路由API', trigger: 'change' }]
 }
 
 const dialogTitle = computed(() => {
@@ -229,6 +243,32 @@ const loadMerchantOptions = async () => {
     }
 }
 
+const loadSupplierApiOptions = async (apiId?: number) => {
+    if (!apiId) {
+        supplierApiOptions.value = []
+        return
+    }
+    try {
+        const res = await supplierApiApi.page({
+            page: 1,
+            size: 100,
+            enable: true,
+            apiId: apiId
+        })
+        if (res.code === 200 && res.data) {
+            supplierApiOptions.value = res.data.records
+        }
+    } catch (error) {
+        console.error('加载供应商路由API选项失败:', error)
+    }
+}
+
+// 监听API选择变化
+const handleApiChange = async (apiId: number) => {
+    form.routerSupplierApis = [] // 清空已选择的供应商路由
+    await loadSupplierApiOptions(apiId)
+}
+
 const handleQuery = () => {
     queryParams.page = 1
     loadData()
@@ -251,15 +291,30 @@ const handleCurrentChange = (page: number) => {
     loadData()
 }
 
-const handleView = (row: ApiSaleResDTO) => {
+const handleView = async (row: ApiSaleResDTO) => {
     dialogType.value = 'view'
+    // 先加载选项数据
+    await Promise.all([
+        loadMerchantOptions(),
+        loadApiOptions(),
+        loadSupplierApiOptions(row.api?.id)
+    ])
+
     Object.assign(form, {
         id: row.id,
-        api: { id: row.api?.id },
-        merchant: { id: row.merchant?.id },
-        routerSupplierApis: row.routerSupplierApis?.map(supplierApi => ({ id: supplierApi.id })) || [],
+        api: {
+            id: row.api?.id,
+            name: row.api?.name
+        },
+        merchant: {
+            id: row.merchant?.id,
+            name: row.merchant?.name
+        },
+        routerSupplierApis: row.routerSupplierApis?.map(supplierApi => ({
+            id: supplierApi.id,
+            name: supplierApi.name
+        })) || [],
         price: row.price ?? 0,
-        description: row.description || '',
         enable: row.enable ?? true
     })
     dialogVisible.value = true
@@ -295,16 +350,31 @@ const handleAdd = () => {
     dialogVisible.value = true
 }
 
-const handleEdit = (row: ApiSaleResDTO) => {
+const handleEdit = async (row: ApiSaleResDTO) => {
     dialogType.value = 'edit'
-    // 更新表单数据，包含价格字段
+    // 先加载选项数据
+    await Promise.all([
+        loadMerchantOptions(),
+        loadApiOptions(),
+        loadSupplierApiOptions(row.api?.id)
+    ])
+
+    // 更新表单数据，确保与后端 ApiSaleUpdateReqDTO 匹配
     const updateForm = {
         id: row.id,
-        api: { id: row.api?.id },
-        merchant: { id: row.merchant?.id },
-        routerSupplierApis: row.routerSupplierApis?.map(supplierApi => ({ id: supplierApi.id })) || [],
+        api: {
+            id: row.api?.id,
+            name: row.api?.name
+        },
+        merchant: {
+            id: row.merchant?.id,
+            name: row.merchant?.name
+        },
+        routerSupplierApis: row.routerSupplierApis?.map(supplierApi => ({
+            id: supplierApi.id,
+            name: supplierApi.name
+        })) || [],
         price: row.price ?? 0,
-        description: row.description || '',
         enable: row.enable ?? true
     } as ApiSaleUpdateDTO
 
@@ -316,18 +386,16 @@ const handleEdit = (row: ApiSaleResDTO) => {
 const resetForm = () => {
     if (dialogType.value === 'edit') {
         form.price = 0
-        form.description = ''
         form.routerSupplierApis = []
         form.enable = true
         if ('id' in form) {
             delete (form as any).id
         }
     } else {
-        form.api = { id: undefined }
-        form.merchant = { id: undefined }
+        form.api = { id: undefined, name: '' }
+        form.merchant = { id: undefined, name: '' }
         form.routerSupplierApis = []
         form.price = 0
-        form.description = ''
         form.enable = true
     }
     if (formRef.value) {
@@ -347,9 +415,8 @@ const handleSubmit = async () => {
                         id: (form as ApiSaleUpdateDTO).id,
                         api: { id: form.api.id },
                         merchant: { id: form.merchant.id },
-                        routerSupplierApis: form.routerSupplierApis || [],
+                        routerSupplierApis: form.routerSupplierApis,
                         price: form.price,
-                        description: form.description,
                         enable: form.enable
                     }
                     await apiSaleApi.update(updateDto)
@@ -358,7 +425,8 @@ const handleSubmit = async () => {
                     const createDto: ApiSaleCreateDTO = {
                         api: { id: form.api.id },
                         merchant: { id: form.merchant.id },
-                        routerSupplierApis: form.routerSupplierApis || [],
+                        routerSupplierApis: form.routerSupplierApis,
+                        price: form.price,
                         enable: form.enable
                     }
                     await apiSaleApi.create(createDto)

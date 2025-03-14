@@ -19,12 +19,16 @@ public class ApiSaleUpdateReqDTO {
 	@NotNull(message = "ID不能为空")
 	private Long id;
 
+	@NotNull(message = "api不能为空")
 	private LongIdDTO api;
 
-	private BigDecimal price;
-
+	@NotNull(message = "商户不能为空")
 	private LongIdDTO merchant;
 
+	@NotNull(message = "价格不能为空")
+	private BigDecimal price;
+
+	@NotNull(message = "供应商路由api不能为空")
 	private List<LongIdDTO> routerSupplierApis;
 
 	private Boolean enable;

@@ -25,6 +25,7 @@
                     </template>
                     <el-menu-item index="/api-category">API分类管理</el-menu-item>
                     <el-menu-item index="/api">API管理</el-menu-item>
+                    <el-menu-item index="/api/sale">API销售管理</el-menu-item>
                 </el-sub-menu>
 
                 <!-- 商户管理 -->

@@ -10,9 +10,7 @@ import com.api.market.core.exception.MerchantException;
 import com.api.market.core.jpa.PkPageable;
 import com.api.market.core.mapper.MerchantMapper;
 import com.api.market.core.po.MerchantPO;
-import com.api.market.core.po.UserPO;
 import com.api.market.core.repo.MerchantRepo;
-import com.api.market.core.util.AdminUserUtil;
 import jakarta.annotation.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -68,10 +66,15 @@ public class MerchantService {
 		emailService.sendAkSk(merchant.getName(), merchant.getMerCode(), merchant.getAppKey(), merchant.getAppSecret(), merchant.getContactEmail());
 	}
 
-	public boolean isAvailable() {
+	public boolean isAccountAvailable(String merchantCode, String apiCode) {
+		// todo 校验商户有效性
 
+		return true;
+	}
 
-
+	public boolean isApiAvailable(String merchantCode, String apiCode) {
+		// todo 校验商户是否有该api的调用权限
+		return true;
 	}
 
 	public MerchantPO findById(Long id) {

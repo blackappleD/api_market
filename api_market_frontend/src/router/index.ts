@@ -30,6 +30,11 @@ const routes: RouteRecordRaw[] = [
                 name: 'Api',
                 component: () => import('@/views/api/ApiList.vue')
             },
+            {
+                path: '/api/sale',
+                name: 'ApiSale',
+                component: () => import('@/views/api/ApiSaleList.vue')
+            },
             
             // 商户管理
             {
@@ -62,7 +67,7 @@ const routes: RouteRecordRaw[] = [
 ]
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory(import.meta.env.BASE_URL),
     routes
 })
 

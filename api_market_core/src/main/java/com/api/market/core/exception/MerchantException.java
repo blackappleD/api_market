@@ -23,4 +23,12 @@ public class MerchantException extends ApiMarketException {
 	public static MerchantException notFound() {
 		return new MerchantException("商家不存在存在");
 	}
+
+	public static MerchantException accountNotAvailable() {
+		return new MerchantException("账户暂时不可用");
+	}
+
+	public static MerchantException accountApiNotAvailable() {
+		return new MerchantException("账户暂时不可调用该接口");
+	}
 }

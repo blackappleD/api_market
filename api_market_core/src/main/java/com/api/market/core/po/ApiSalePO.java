@@ -6,14 +6,16 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldNameConstants;
 
+import java.util.List;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-@Table(name = MerchantApiSellPO.TABLE_NAME)
+@Table(name = ApiSalePO.TABLE_NAME)
 @FieldNameConstants
-public class MerchantApiSellPO extends BasePO.CommonPO<Long> {
+public class ApiSalePO extends BasePO.CommonPO<Long> {
 
-	public static final String TABLE_NAME = "am_merchant_api_sell";
+	public static final String TABLE_NAME = "am_api_sale";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +28,12 @@ public class MerchantApiSellPO extends BasePO.CommonPO<Long> {
 	@ManyToOne
 	@JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private MerchantPO merchant;
+
+	@ManyToMany
+	@JoinTable(joinColumns = @JoinColumn(name = "api_sale_id"),
+			inverseJoinColumns = @JoinColumn(name = "router_supplier_id"),
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	private List<SupplierPO> routerSuppliers;
 
 	private boolean enable;
 

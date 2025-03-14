@@ -3,8 +3,10 @@ package com.api.market.api.service;
 import cn.hutool.extra.spring.SpringUtil;
 import com.api.market.api.dto.ApiBaseReqDTO;
 import com.api.market.api.dto.ApiBaseResDTO;
+import com.api.market.core.exception.MerchantException;
 import com.api.market.core.exception.SupplierException;
 import com.api.market.core.po.SupplierPO;
+import com.api.market.core.service.MerchantService;
 import com.api.market.core.service.SupplierApiService;
 import jakarta.annotation.Resource;
 import org.springframework.boot.ApplicationArguments;
@@ -29,6 +31,9 @@ public class SupplierServiceFactory implements ApplicationRunner {
 	@Resource
 	private SupplierApiService supplierApiService;
 
+	@Resource
+	private MerchantService merchantService;
+
 	private SupplierService getService(String apiCode) {
 
 		List<SupplierPO> suppliers = supplierApiService.findAllByApiCode(apiCode);
@@ -49,7 +54,14 @@ public class SupplierServiceFactory implements ApplicationRunner {
 	@SuppressWarnings("rawtypes")
 	public ApiBaseResDTO execute(ApiBaseReqDTO params) {
 
-		// todo 校验商户的有效性
+		boolean available = merchantService.isAccountAvailable(params.getMerchantCode(), params.getApiCode());
+		if (!available) {
+			throw MerchantException.accountNotAvailable();
+		}
+		boolean apiAvailable = merchantService.isApiAvailable(params.getMerchantCode(), params.getApiCode());
+		if (!apiAvailable) {
+			throw MerchantException.accountApiNotAvailable();
+		}
 
 		return getService(params.getApiCode()).execute(params);
 	}
